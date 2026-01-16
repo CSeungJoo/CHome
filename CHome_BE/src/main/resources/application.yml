@@ -1,6 +1,19 @@
 spring:
   application:
     name: CHome-BE
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          debug: ${MAIL_SMTP_DEBUG:false}
+          timeout: ${MAIL_SMTP_TIMEOUT:5000}
+        starttls:
+          enable: ${MAIL_STARTTLS_ENABLE:true}
 
   datasource:
     url: jdbc:h2:mem:chome
@@ -24,3 +37,8 @@ spring:
 
 server:
   port: 8080
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:3000}
+  email-token:
+    secret: ${APP_SECRET}
