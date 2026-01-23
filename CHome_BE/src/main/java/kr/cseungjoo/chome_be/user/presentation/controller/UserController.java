@@ -9,6 +9,7 @@ import kr.cseungjoo.chome_be.user.presentation.dto.request.CreateUserRequest;
 import kr.cseungjoo.chome_be.user.presentation.dto.response.CreateUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,7 +22,7 @@ public class UserController {
     private final VerifyEmailUseCase verifyEmailUseCase;
 
     @PostMapping
-    public ResponseEntity<BasicResponse.BaseResponse> createUser(@RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<BasicResponse.BaseResponse> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         CreateUserResult result = createUserUseCase.execute(
                 new CreateUserCommand(
                         createUserRequest.name(),

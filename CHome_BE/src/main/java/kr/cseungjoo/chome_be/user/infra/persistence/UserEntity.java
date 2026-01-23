@@ -1,6 +1,7 @@
 package kr.cseungjoo.chome_be.user.infra.persistence;
 
 import jakarta.persistence.*;
+import kr.cseungjoo.chome_be.user.domain.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,10 @@ public class UserEntity {
 
     @Column
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Role role;
 
     @Column
     private Instant emailVerifyAt;

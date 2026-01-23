@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,6 +17,17 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     private final List<ExceptionMapper> mappers;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<BasicResponse.BaseResponse> validationHandle(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("입력값이 올바르지 않습니다.");
+
+        log.info("validation failed: {}", message);
+        return BasicResponse.error(message, HttpStatus.BAD_REQUEST, "V4000");
+    }
 
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<BasicResponse.BaseResponse> domainHandle(DomainException e) {

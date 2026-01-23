@@ -44,6 +44,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getRole(),
                 user.getEmailVerifyAt(),
                 user.getCreatedAt(),
                 user.getLastLogin()
@@ -58,6 +59,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 userEntity.getName(),
                 userEntity.getEmail(),
                 userEntity.getPassword(),
+                userEntity.getRole(),
                 userEntity.getEmailVerifyAt(),
                 userEntity.getCreatedAt(),
                 userEntity.getLastLogin()

@@ -15,15 +15,16 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private Role role;
     private Instant emailVerifyAt;
     private Instant createdAt;
     private Instant lastLogin;
 
-    public static User restore(Long id, String name, String email, String password, Instant emailVerifyAt, Instant createdAt, Instant lastLogin) {
+    public static User restore(Long id, String name, String email, String password, Role role, Instant emailVerifyAt, Instant createdAt, Instant lastLogin) {
         if (id == null || createdAt == null) {
             throw new IllegalStateException("id or createdAt is null");
         }
-        User user = new User(id, name, email, password, emailVerifyAt, createdAt, lastLogin);
+        User user = new User(id, name, email, password, role, emailVerifyAt, createdAt, lastLogin);
 
         return user;
     }
@@ -32,7 +33,7 @@ public class User {
         if (name.length() < 2) {
             throw new NameRuleViolationException("이름은 최소 2자 이상이여야 합니다.");
         }
-        User user = new User(null, name, email, password, null, Instant.now(), null);
+        User user = new User(null, name, email, password, Role.USER, null, Instant.now(), null);
 
         return user;
     }

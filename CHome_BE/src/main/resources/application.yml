@@ -35,10 +35,20 @@ spring:
         format_sql: true
         use_sql_comments: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD}
+      port: ${REDIS_PORT:6379}
+
 server:
   port: 8080
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:3000}
   email-token:
-    secret: ${APP_SECRET}
+    secret: ${APP_EMAIL_TOKEN_SECRET}
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    access-expiration-ms: ${APP_JWT_ACCESS_EXPIRATION_MS:1800000}
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000}
