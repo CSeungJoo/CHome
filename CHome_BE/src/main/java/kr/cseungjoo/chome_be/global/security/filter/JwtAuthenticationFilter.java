@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.cseungjoo.chome_be.global.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.global.security.port.TokenProvider;
 import kr.cseungjoo.chome_be.user.domain.Role;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                    new UsernamePasswordAuthenticationToken(new AuthenticatedUser(userId), null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

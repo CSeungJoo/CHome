@@ -17,7 +17,7 @@ public class Hub {
     private long ownerId;
     private Instant createdAt;
 
-    static Hub restore(
+    public static Hub restore(
             Long id,
             String serialNumber,
             String alias,
