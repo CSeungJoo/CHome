@@ -18,7 +18,6 @@ public class HubRepositoryPortAdapter implements HubRepositoryPort {
 
     private final EntityManager em;
     private final JpaHubRepository jpaHubRepository;
-    private final JpaHubPermissionRepository jpaHubPermissionRepository;
 
     @Override
     public Optional<Hub> findById(long hubId) {

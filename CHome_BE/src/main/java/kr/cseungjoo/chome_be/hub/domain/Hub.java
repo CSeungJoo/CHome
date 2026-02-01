@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,5 +37,16 @@ public class Hub {
         Hub hub = new Hub(null, serialNumber, alias, ownerId, Instant.now());
 
         return hub;
+    }
+
+    public boolean canReadBy(long userId, List<HubPermission> permissions) {
+        return userId == ownerId
+                || permissions.stream().anyMatch(p ->
+                p.getAction() == HubAction.READ
+        );
+    }
+
+    public boolean isOwner(long userId) {
+        return userId == ownerId;
     }
 }

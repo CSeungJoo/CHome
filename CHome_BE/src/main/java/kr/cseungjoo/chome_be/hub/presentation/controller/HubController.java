@@ -3,20 +3,23 @@ package kr.cseungjoo.chome_be.hub.presentation.controller;
 import jakarta.validation.Valid;
 import kr.cseungjoo.chome_be.global.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.global.response.BasicResponse;
+import kr.cseungjoo.chome_be.hub.application.command.FindAccessibleHubsCommand;
 import kr.cseungjoo.chome_be.hub.application.command.RegisterHubCommand;
+import kr.cseungjoo.chome_be.hub.application.port.in.FindAccessibleHubsUseCase;
 import kr.cseungjoo.chome_be.hub.application.port.in.RegisterHubUseCase;
+import kr.cseungjoo.chome_be.hub.application.result.FindAccessibleHubsResult;
 import kr.cseungjoo.chome_be.hub.application.result.RegisterHubResult;
 import kr.cseungjoo.chome_be.hub.presentation.dto.request.RegisterHubRequest;
+import kr.cseungjoo.chome_be.hub.presentation.dto.response.GetAccessibleHubsResponse;
 import kr.cseungjoo.chome_be.hub.presentation.dto.response.RegisterHubResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -26,6 +29,7 @@ import java.security.Principal;
 public class HubController {
 
     private final RegisterHubUseCase registerHubUseCase;
+    private final FindAccessibleHubsUseCase findAccessibleHubsUseCase;
 
     @PostMapping
     public ResponseEntity<BasicResponse.BaseResponse> registerHub(
@@ -47,5 +51,36 @@ public class HubController {
         );
 
         return BasicResponse.ok(registerHubResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<BasicResponse.BaseResponse> getAccessibleHubs(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PageableDefault Pageable pageable
+            ) {
+        FindAccessibleHubsResult result = findAccessibleHubsUseCase.execute(
+                new FindAccessibleHubsCommand(
+                        authenticatedUser.userId(),
+                        pageable
+                )
+        );
+
+        GetAccessibleHubsResponse response = new GetAccessibleHubsResponse(
+                result.hubs().stream()
+                        .map(h ->
+                                new GetAccessibleHubsResponse.AccessibleHub(
+                                        h.id(),
+                                        h.serialNumber(),
+                                        h.alias(),
+                                        h.isOwner()
+                                )
+                        ).toList(),
+                result.totalCount(),
+                result.page(),
+                result.size(),
+                result.hasNext()
+        );
+
+        return BasicResponse.ok(response);
     }
 }

@@ -12,7 +12,7 @@ public class HubPermission {
     private final long hubId;
     private final long userId;
 
-    static HubPermission restore(Long id, HubAction action, long hubId, long userId) {
+    public static HubPermission restore(Long id, HubAction action, long hubId, long userId) {
         if (id == null) {
             throw new IllegalStateException("id is null");
         }
