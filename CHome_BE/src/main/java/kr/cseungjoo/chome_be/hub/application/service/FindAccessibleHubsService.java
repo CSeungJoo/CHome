@@ -1,9 +1,9 @@
 package kr.cseungjoo.chome_be.hub.application.service;
 
 import kr.cseungjoo.chome_be.hub.application.command.FindAccessibleHubsCommand;
-import kr.cseungjoo.chome_be.hub.application.port.in.FindAccessibleHubsUseCase;
-import kr.cseungjoo.chome_be.hub.application.port.out.HubPermissionRepositoryPort;
-import kr.cseungjoo.chome_be.hub.application.port.out.HubRepositoryPort;
+import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsUseCase;
+import kr.cseungjoo.chome_be.hub.port.out.HubPermissionRepositoryPort;
+import kr.cseungjoo.chome_be.hub.port.out.HubRepositoryPort;
 import kr.cseungjoo.chome_be.hub.application.result.FindAccessibleHubsResult;
 import kr.cseungjoo.chome_be.hub.domain.Hub;
 import kr.cseungjoo.chome_be.hub.domain.HubPermission;

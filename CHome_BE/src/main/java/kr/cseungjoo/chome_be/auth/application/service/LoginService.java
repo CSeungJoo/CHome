@@ -3,10 +3,10 @@ package kr.cseungjoo.chome_be.auth.application.service;
 import kr.cseungjoo.chome_be.auth.application.command.LoginCommand;
 import kr.cseungjoo.chome_be.auth.application.exception.AuthenticationFailedException;
 import kr.cseungjoo.chome_be.auth.application.exception.EmailNotVerifiedException;
-import kr.cseungjoo.chome_be.auth.application.port.in.LoginUseCase;
+import kr.cseungjoo.chome_be.auth.port.in.LoginUseCase;
 import kr.cseungjoo.chome_be.auth.application.result.LoginResult;
-import kr.cseungjoo.chome_be.global.security.port.RefreshTokenPort;
-import kr.cseungjoo.chome_be.global.security.port.TokenProvider;
+import kr.cseungjoo.chome_be.common.port.out.RefreshTokenPort;
+import kr.cseungjoo.chome_be.common.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
 import kr.cseungjoo.chome_be.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginService implements LoginUseCase {
 
     private final UserRepositoryPort userRepositoryPort;
-    private final TokenProvider tokenProvider;
+    private final TokenProviderPort tokenProviderPort;
     private final RefreshTokenPort refreshTokenPort;
     private final PasswordEncoder passwordEncoder;
 
@@ -37,7 +37,7 @@ public class LoginService implements LoginUseCase {
             throw new EmailNotVerifiedException();
         }
 
-        String accessToken = tokenProvider.issue(user.getId(), user.getRole());
+        String accessToken = tokenProviderPort.issue(user.getId(), user.getRole());
         String refreshToken = refreshTokenPort.issue(user.getId());
 
         return new LoginResult(accessToken, refreshToken, user.getId());

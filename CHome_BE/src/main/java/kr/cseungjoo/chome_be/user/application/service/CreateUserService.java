@@ -1,6 +1,6 @@
 package kr.cseungjoo.chome_be.user.application.service;
 
-import kr.cseungjoo.chome_be.global.mail.port.MailSender;
+import kr.cseungjoo.chome_be.common.port.out.MailSenderPort;
 import kr.cseungjoo.chome_be.user.application.command.CreateUserCommand;
 import kr.cseungjoo.chome_be.user.application.exception.AlreadyExistsUserException;
 import kr.cseungjoo.chome_be.user.application.port.in.CreateUserUseCase;
@@ -21,7 +21,7 @@ public class CreateUserService implements CreateUserUseCase {
     private final PasswordEncoder pwdEncoder;
     private final UserRepositoryPort userRepositoryPort;
     private final EmailVerificationTokenPort emailVerificationTokenPort;
-    private final MailSender mailSender;
+    private final MailSenderPort mailSenderPort;
 
     @Value("${app.base-url:http://localhost:3000}")
     private String baseUrl;
@@ -41,7 +41,7 @@ public class CreateUserService implements CreateUserUseCase {
         String token = emailVerificationTokenPort.issue(saved.getId());
         String verifyLink = baseUrl + "/users/verify?token=" + token;
 
-        mailSender.sendEmailVerification(saved.getEmail(), verifyLink);
+        mailSenderPort.sendEmailVerification(saved.getEmail(), verifyLink);
 
         return new CreateUserResult(
                 saved.getName(),
