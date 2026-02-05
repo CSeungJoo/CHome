@@ -1,6 +1,6 @@
-package kr.cseungjoo.chome_be.common.adapter.security.infra;
+package kr.cseungjoo.chome_be.shared.adapter.security.infra;
 
-import kr.cseungjoo.chome_be.common.port.out.RefreshTokenPort;
+import kr.cseungjoo.chome_be.shared.port.out.RefreshTokenPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;

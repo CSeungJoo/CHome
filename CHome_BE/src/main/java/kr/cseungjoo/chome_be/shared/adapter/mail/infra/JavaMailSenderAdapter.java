@@ -1,6 +1,6 @@
-package kr.cseungjoo.chome_be.common.adapter.mail.infra;
+package kr.cseungjoo.chome_be.shared.adapter.mail.infra;
 
-import kr.cseungjoo.chome_be.common.port.out.MailSenderPort;
+import kr.cseungjoo.chome_be.shared.port.out.MailSenderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

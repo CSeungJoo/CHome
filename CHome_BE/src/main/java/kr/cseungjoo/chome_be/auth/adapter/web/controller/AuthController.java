@@ -10,7 +10,7 @@ import kr.cseungjoo.chome_be.auth.port.in.RefreshUseCase;
 import kr.cseungjoo.chome_be.auth.application.result.LoginResult;
 import kr.cseungjoo.chome_be.auth.application.result.RefreshResult;
 import kr.cseungjoo.chome_be.auth.adapter.web.dto.response.RefreshResponse;
-import kr.cseungjoo.chome_be.common.adapter.web.response.BasicResponse;
+import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;

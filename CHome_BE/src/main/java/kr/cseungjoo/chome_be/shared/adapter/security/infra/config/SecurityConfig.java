@@ -1,6 +1,6 @@
-package kr.cseungjoo.chome_be.common.adapter.security.infra.config;
+package kr.cseungjoo.chome_be.shared.adapter.security.infra.config;
 
-import kr.cseungjoo.chome_be.common.adapter.security.infra.filter.JwtAuthenticationFilter;
+import kr.cseungjoo.chome_be.shared.adapter.security.infra.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

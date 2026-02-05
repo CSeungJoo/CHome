@@ -4,10 +4,10 @@ import kr.cseungjoo.chome_be.auth.application.exception.AuthenticationFailedExce
 import kr.cseungjoo.chome_be.auth.application.exception.EmailNotVerifiedException;
 import kr.cseungjoo.chome_be.auth.application.exception.InvalidRefreshTokenException;
 import kr.cseungjoo.chome_be.auth.domain.exception.AuthException;
-import kr.cseungjoo.chome_be.common.adapter.web.ExceptionMapper;
-import kr.cseungjoo.chome_be.common.adapter.web.response.BasicResponse;
+import kr.cseungjoo.chome_be.shared.adapter.web.exception.ExceptionMapper;
+import kr.cseungjoo.chome_be.shared.adapter.web.exception.WebExceptionMetadata;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,17 +19,17 @@ public class AuthExceptionMapper implements ExceptionMapper {
     }
 
     @Override
-    public ResponseEntity<BasicResponse.BaseResponse> map(Throwable e) {
+    public WebExceptionMetadata map(Throwable e) {
 
         // application
         if (e instanceof AuthenticationFailedException) {
-            return BasicResponse.error(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4010");
+            return new WebExceptionMetadata(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4010", LogLevel.WARN);
         } else if (e instanceof EmailNotVerifiedException) {
-            return BasicResponse.error(e.getMessage(), HttpStatus.FORBIDDEN, "A4030");
+            return new WebExceptionMetadata(e.getMessage(), HttpStatus.FORBIDDEN, "A4030", LogLevel.WARN);
         } else if (e instanceof InvalidRefreshTokenException) {
-            return BasicResponse.error(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4011");
+            return new WebExceptionMetadata(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4011", LogLevel.WARN);
         }
 
-        return ExceptionMapper.defaultResponse(e);
+        return new WebExceptionMetadata(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, "AD5000", LogLevel.ERROR);
     }
 }

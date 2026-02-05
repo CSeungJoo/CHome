@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.common.adapter.mail.infra.config;
+package kr.cseungjoo.chome_be.shared.adapter.mail.infra.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

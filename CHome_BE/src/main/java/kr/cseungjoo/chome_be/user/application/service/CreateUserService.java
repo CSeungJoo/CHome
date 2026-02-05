@@ -1,6 +1,6 @@
 package kr.cseungjoo.chome_be.user.application.service;
 
-import kr.cseungjoo.chome_be.common.port.out.MailSenderPort;
+import kr.cseungjoo.chome_be.shared.port.out.MailSenderPort;
 import kr.cseungjoo.chome_be.user.application.command.CreateUserCommand;
 import kr.cseungjoo.chome_be.user.application.exception.AlreadyExistsUserException;
 import kr.cseungjoo.chome_be.user.application.port.in.CreateUserUseCase;

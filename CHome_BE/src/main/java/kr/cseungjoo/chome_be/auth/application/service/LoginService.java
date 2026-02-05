@@ -5,8 +5,8 @@ import kr.cseungjoo.chome_be.auth.application.exception.AuthenticationFailedExce
 import kr.cseungjoo.chome_be.auth.application.exception.EmailNotVerifiedException;
 import kr.cseungjoo.chome_be.auth.port.in.LoginUseCase;
 import kr.cseungjoo.chome_be.auth.application.result.LoginResult;
-import kr.cseungjoo.chome_be.common.port.out.RefreshTokenPort;
-import kr.cseungjoo.chome_be.common.port.out.TokenProviderPort;
+import kr.cseungjoo.chome_be.shared.port.out.RefreshTokenPort;
+import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
 import kr.cseungjoo.chome_be.user.domain.User;
 import lombok.RequiredArgsConstructor;

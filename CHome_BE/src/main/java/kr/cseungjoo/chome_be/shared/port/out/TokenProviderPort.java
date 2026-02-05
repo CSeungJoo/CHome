@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.common.port.out;
+package kr.cseungjoo.chome_be.shared.port.out;
 
 import kr.cseungjoo.chome_be.user.domain.Role;
 

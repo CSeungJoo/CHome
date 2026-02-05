@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.common.adapter.web.response;
+package kr.cseungjoo.chome_be.shared.adapter.web.response;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

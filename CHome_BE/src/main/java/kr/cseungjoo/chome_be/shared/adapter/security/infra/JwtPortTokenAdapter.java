@@ -1,8 +1,8 @@
-package kr.cseungjoo.chome_be.common.adapter.security.infra;
+package kr.cseungjoo.chome_be.shared.adapter.security.infra;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import kr.cseungjoo.chome_be.common.port.out.TokenProviderPort;
+import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.domain.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

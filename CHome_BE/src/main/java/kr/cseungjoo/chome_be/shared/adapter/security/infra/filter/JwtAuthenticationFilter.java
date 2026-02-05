@@ -1,11 +1,11 @@
-package kr.cseungjoo.chome_be.common.adapter.security.infra.filter;
+package kr.cseungjoo.chome_be.shared.adapter.security.infra.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.cseungjoo.chome_be.common.adapter.web.context.AuthenticatedUser;
-import kr.cseungjoo.chome_be.common.port.out.TokenProviderPort;
+import kr.cseungjoo.chome_be.shared.adapter.web.context.AuthenticatedUser;
+import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

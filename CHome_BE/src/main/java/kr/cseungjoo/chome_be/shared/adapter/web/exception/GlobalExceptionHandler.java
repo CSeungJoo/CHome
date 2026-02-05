@@ -1,6 +1,6 @@
-package kr.cseungjoo.chome_be.common.adapter.web;
+package kr.cseungjoo.chome_be.shared.adapter.web.exception;
 
-import kr.cseungjoo.chome_be.common.adapter.web.response.BasicResponse;
+import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -26,32 +26,28 @@ public class GlobalExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .orElse("입력값이 올바르지 않습니다.");
 
-        log.info("validation failed: {}", message);
+        log.warn("validation failed: {}", message);
         return BasicResponse.error(message, HttpStatus.BAD_REQUEST, "V4000");
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<BasicResponse.BaseResponse> runtimeExceptionHandle(RuntimeException e) {
-        ResponseEntity<BasicResponse.BaseResponse> response = map(e);
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<BasicResponse.BaseResponse> runtimeExceptionHandle(Throwable e) {
+        WebExceptionMetadata metadata = map(e);
 
-        return response;
+        switch (metadata.logLevel()) {
+            case WARN  -> log.warn(metadata.message(), e);
+            case ERROR -> log.error(metadata.message(), e);
+            default    -> log.error("unchecked exception: {}", metadata.message(), e);
+        }
+
+        return BasicResponse.error(metadata.message(), metadata.status(), metadata.code());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handle(Exception e) {
-        log.error("unexpected exception", e);
-        return BasicResponse.error(
-                "internal server error",
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "C5000"
-        );
-    }
-
-    private ResponseEntity<BasicResponse.BaseResponse> map(Throwable e) {
+    private WebExceptionMetadata map(Throwable e) {
         return mappers.stream()
                 .filter(m -> m.supports(e))
                 .findFirst()
                 .map(m -> m.map(e))
-                .orElseGet(() -> ExceptionMapper.defaultResponse(e));
+                .orElseGet(() -> ExceptionMapper.defaultMetadata(e));
     }
 }

@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.common.adapter.security.infra.config;
+package kr.cseungjoo.chome_be.shared.adapter.security.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

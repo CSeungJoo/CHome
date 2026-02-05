@@ -1,6 +1,6 @@
 package kr.cseungjoo.chome_be.user.adapter.web.controller;
 
-import kr.cseungjoo.chome_be.common.adapter.web.response.BasicResponse;
+import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import kr.cseungjoo.chome_be.user.adapter.web.dto.request.CreateUserRequest;
 import kr.cseungjoo.chome_be.user.adapter.web.dto.response.CreateUserResponse;
 import kr.cseungjoo.chome_be.user.application.command.CreateUserCommand;
