@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.user.adapter.web.controller;
 
+import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import kr.cseungjoo.chome_be.user.adapter.web.dto.request.CreateUserRequest;
 import kr.cseungjoo.chome_be.user.adapter.web.dto.response.CreateUserResponse;
@@ -13,7 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
+@ApiV1
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {

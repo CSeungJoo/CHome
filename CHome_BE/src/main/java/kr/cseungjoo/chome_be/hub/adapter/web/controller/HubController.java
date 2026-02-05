@@ -1,6 +1,7 @@
 package kr.cseungjoo.chome_be.hub.adapter.web.controller;
 
 import jakarta.validation.Valid;
+import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import kr.cseungjoo.chome_be.hub.application.command.FindAccessibleHubsCommand;
@@ -19,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@ApiV1
 @RequestMapping("/hubs")
 @RequiredArgsConstructor
 public class HubController {
