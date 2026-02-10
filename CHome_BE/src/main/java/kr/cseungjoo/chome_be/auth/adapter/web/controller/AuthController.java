@@ -1,25 +1,27 @@
 package kr.cseungjoo.chome_be.auth.adapter.web.controller;
 
+import jakarta.validation.Valid;
 import kr.cseungjoo.chome_be.auth.adapter.web.dto.request.LoginRequest;
 import kr.cseungjoo.chome_be.auth.adapter.web.dto.request.RefreshRequest;
 import kr.cseungjoo.chome_be.auth.adapter.web.dto.response.LoginResponse;
+import kr.cseungjoo.chome_be.auth.adapter.web.dto.response.RefreshResponse;
 import kr.cseungjoo.chome_be.auth.application.command.LoginCommand;
 import kr.cseungjoo.chome_be.auth.application.command.RefreshCommand;
-import kr.cseungjoo.chome_be.auth.port.in.LoginUseCase;
-import kr.cseungjoo.chome_be.auth.port.in.RefreshUseCase;
 import kr.cseungjoo.chome_be.auth.application.result.LoginResult;
 import kr.cseungjoo.chome_be.auth.application.result.RefreshResult;
-import kr.cseungjoo.chome_be.auth.adapter.web.dto.response.RefreshResponse;
+import kr.cseungjoo.chome_be.auth.port.in.LoginUseCase;
+import kr.cseungjoo.chome_be.auth.port.in.RefreshUseCase;
 import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @ApiV1
+@RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {

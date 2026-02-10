@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.hub.domain;
 
+import kr.cseungjoo.chome_be.hub.domain.exception.HubPermissionDeniedException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,6 +45,16 @@ public class Hub {
                 || permissions.stream().anyMatch(p ->
                 p.getAction() == HubAction.READ
         );
+    }
+
+    public void assertDeletableBy(long userId, List<HubPermission> permissions) {
+        boolean deletable = userId == ownerId
+                || permissions.stream().anyMatch(p ->
+                p.getAction() == HubAction.DELETE);
+
+        if (!deletable) {
+            throw new HubPermissionDeniedException("삭제 권한이 없습니다.");
+        }
     }
 
     public boolean isOwner(long userId) {

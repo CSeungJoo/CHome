@@ -1,8 +1,8 @@
 package kr.cseungjoo.chome_be.hub.adapter.infra.persistence;
 
 import jakarta.persistence.EntityManager;
-import kr.cseungjoo.chome_be.hub.port.out.HubPermissionRepositoryPort;
 import kr.cseungjoo.chome_be.hub.domain.HubPermission;
+import kr.cseungjoo.chome_be.hub.port.out.HubPermissionRepositoryPort;
 import kr.cseungjoo.chome_be.user.adapter.infra.persistence.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,6 +24,15 @@ public class HubPermissionRepositoryAdapter implements HubPermissionRepositoryPo
         return hubPermissionEntities.stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HubPermission> findByUserIdAndHubId(long userId, long hubId) {
+        List<HubPermission> hubPermissions = jpaHubPermissionRepository.findByHubIdAndUserId(hubId, userId).stream()
+                .map(this::toDomain)
+                .toList();
+
+        return hubPermissions;
     }
 
     private HubPermissionEntity toEntity(HubPermission hubPermission) {

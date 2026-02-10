@@ -29,7 +29,7 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/users", "/users/verify", "/auth/login", "/auth/refresh", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/*/users", "/api/*/users/verify", "/api/*/auth/login", "/api/*/auth/refresh", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

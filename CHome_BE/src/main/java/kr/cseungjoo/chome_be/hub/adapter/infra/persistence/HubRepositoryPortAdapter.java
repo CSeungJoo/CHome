@@ -1,8 +1,8 @@
 package kr.cseungjoo.chome_be.hub.adapter.infra.persistence;
 
 import jakarta.persistence.EntityManager;
-import kr.cseungjoo.chome_be.hub.port.out.HubRepositoryPort;
 import kr.cseungjoo.chome_be.hub.domain.Hub;
+import kr.cseungjoo.chome_be.hub.port.out.HubRepositoryPort;
 import kr.cseungjoo.chome_be.user.adapter.infra.persistence.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,6 +48,13 @@ public class HubRepositoryPortAdapter implements HubRepositoryPort {
         boolean exists = jpaHubRepository.existsBySerialNumber(serialNumber);
 
         return exists;
+    }
+
+    @Override
+    public void delete(Hub hub) {
+        HubEntity hubEntity = toEntity(hub);
+
+        jpaHubRepository.delete(hubEntity);
     }
 
     private HubEntity toEntity(Hub hub) {

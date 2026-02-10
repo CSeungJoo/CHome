@@ -11,4 +11,6 @@ public interface HubRepositoryPort {
     Page<Hub> findByUserId(long userId, Pageable pageable);
     boolean exists(String serialNumber);
     Hub save(Hub hub);
+
+    void delete(Hub hub);
 }
