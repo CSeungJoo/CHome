@@ -1,16 +1,22 @@
 package kr.cseungjoo.chome_be.hub.adapter.web.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.ChangeHubAliasRequest;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.RegisterHubRequest;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.ChangeHubAliasResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.DeleteHubResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.GetAccessibleHubsResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.RegisterHubResponse;
+import kr.cseungjoo.chome_be.hub.application.command.ChangeHubAliasCommand;
 import kr.cseungjoo.chome_be.hub.application.command.DeleteHubCommand;
 import kr.cseungjoo.chome_be.hub.application.command.FindAccessibleHubsCommand;
 import kr.cseungjoo.chome_be.hub.application.command.RegisterHubCommand;
+import kr.cseungjoo.chome_be.hub.application.result.ChangeHubAliasResult;
 import kr.cseungjoo.chome_be.hub.application.result.DeleteHubResult;
 import kr.cseungjoo.chome_be.hub.application.result.FindAccessibleHubsResult;
 import kr.cseungjoo.chome_be.hub.application.result.RegisterHubResult;
+import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.DeleteHubUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.RegisterHubUseCase;
@@ -33,6 +39,7 @@ public class HubController {
     private final RegisterHubUseCase registerHubUseCase;
     private final FindAccessibleHubsUseCase findAccessibleHubsUseCase;
     private final DeleteHubUseCase deleteHubUseCase;
+    private final ChangeHubAliasUseCase changeHubAliasUseCase;
 
     @PostMapping
     public ResponseEntity<BasicResponse.BaseResponse> registerHub(
@@ -106,5 +113,28 @@ public class HubController {
         );
 
         return BasicResponse.ok(deleteHubResponse);
+    }
+
+    @PutMapping("/{hubId}")
+    public ResponseEntity<BasicResponse.BaseResponse> changeHubAlias(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable Long hubId,
+            @Valid @RequestBody @NotNull ChangeHubAliasRequest request
+            ) {
+
+        ChangeHubAliasResult result = changeHubAliasUseCase.execute(
+                new ChangeHubAliasCommand(
+                        hubId,
+                        request.alias(),
+                        authenticatedUser.userId()
+                )
+        );
+
+        ChangeHubAliasResponse changeHubAliasResponse = new ChangeHubAliasResponse(
+                result.alias(),
+                result.changedAt()
+        );
+
+        return BasicResponse.ok(changeHubAliasResponse);
     }
 }

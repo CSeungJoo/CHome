@@ -57,6 +57,20 @@ public class Hub {
         }
     }
 
+    public void assertUpdatableBy(long userId, List<HubPermission> permissions) {
+        boolean updatable = userId == ownerId
+                || permissions.stream().anyMatch(p ->
+                p.getAction() == HubAction.UPDATE);
+
+        if (!updatable) {
+            throw new HubPermissionDeniedException("업데이트 권한이 없습니다.");
+        }
+    }
+
+    public void renameAlias(String alias) {
+        this.alias = alias;
+    }
+
     public boolean isOwner(long userId) {
         return userId == ownerId;
     }
