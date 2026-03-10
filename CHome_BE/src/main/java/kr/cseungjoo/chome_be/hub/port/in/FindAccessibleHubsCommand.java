@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.hub.application.command;
+package kr.cseungjoo.chome_be.hub.port.in;
 
 import org.springframework.data.domain.Pageable;
 

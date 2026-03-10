@@ -1,4 +1,4 @@
-package kr.cseungjoo.chome_be.user.application.result;
+package kr.cseungjoo.chome_be.user.port.in;
 
 import java.time.Instant;
 

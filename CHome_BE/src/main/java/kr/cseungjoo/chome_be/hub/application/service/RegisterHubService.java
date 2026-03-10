@@ -1,10 +1,10 @@
 package kr.cseungjoo.chome_be.hub.application.service;
 
-import kr.cseungjoo.chome_be.hub.application.command.RegisterHubCommand;
+import kr.cseungjoo.chome_be.hub.port.in.RegisterHubCommand;
 import kr.cseungjoo.chome_be.hub.application.exception.AlreadyExistsHubException;
 import kr.cseungjoo.chome_be.hub.port.in.RegisterHubUseCase;
 import kr.cseungjoo.chome_be.hub.port.out.HubRepositoryPort;
-import kr.cseungjoo.chome_be.hub.application.result.RegisterHubResult;
+import kr.cseungjoo.chome_be.hub.port.in.RegisterHubResult;
 import kr.cseungjoo.chome_be.hub.domain.Hub;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

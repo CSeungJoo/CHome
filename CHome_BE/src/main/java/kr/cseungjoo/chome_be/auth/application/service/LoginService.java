@@ -1,10 +1,10 @@
 package kr.cseungjoo.chome_be.auth.application.service;
 
-import kr.cseungjoo.chome_be.auth.application.command.LoginCommand;
+import kr.cseungjoo.chome_be.auth.port.in.LoginCommand;
 import kr.cseungjoo.chome_be.auth.application.exception.AuthenticationFailedException;
 import kr.cseungjoo.chome_be.auth.application.exception.EmailNotVerifiedException;
 import kr.cseungjoo.chome_be.auth.port.in.LoginUseCase;
-import kr.cseungjoo.chome_be.auth.application.result.LoginResult;
+import kr.cseungjoo.chome_be.auth.port.in.LoginResult;
 import kr.cseungjoo.chome_be.shared.port.out.RefreshTokenPort;
 import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;

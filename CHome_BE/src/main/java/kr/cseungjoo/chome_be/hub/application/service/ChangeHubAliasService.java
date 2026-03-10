@@ -1,8 +1,8 @@
 package kr.cseungjoo.chome_be.hub.application.service;
 
-import kr.cseungjoo.chome_be.hub.application.command.ChangeHubAliasCommand;
+import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasCommand;
 import kr.cseungjoo.chome_be.hub.application.exception.HubNotFoundException;
-import kr.cseungjoo.chome_be.hub.application.result.ChangeHubAliasResult;
+import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasResult;
 import kr.cseungjoo.chome_be.hub.domain.Hub;
 import kr.cseungjoo.chome_be.hub.domain.HubPermission;
 import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasUseCase;

@@ -1,13 +1,13 @@
 package kr.cseungjoo.chome_be.user.application.service;
 
 import kr.cseungjoo.chome_be.shared.port.out.MailSenderPort;
-import kr.cseungjoo.chome_be.user.application.command.CreateUserCommand;
 import kr.cseungjoo.chome_be.user.application.exception.AlreadyExistsUserException;
 import kr.cseungjoo.chome_be.user.application.port.in.CreateUserUseCase;
 import kr.cseungjoo.chome_be.user.application.port.out.EmailVerificationTokenPort;
 import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
-import kr.cseungjoo.chome_be.user.application.result.CreateUserResult;
 import kr.cseungjoo.chome_be.user.domain.User;
+import kr.cseungjoo.chome_be.user.port.in.CreateUserCommand;
+import kr.cseungjoo.chome_be.user.port.in.CreateUserResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

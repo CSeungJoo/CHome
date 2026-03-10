@@ -1,9 +1,9 @@
 package kr.cseungjoo.chome_be.auth.application.service;
 
-import kr.cseungjoo.chome_be.auth.application.command.RefreshCommand;
+import kr.cseungjoo.chome_be.auth.port.in.RefreshCommand;
 import kr.cseungjoo.chome_be.auth.application.exception.InvalidRefreshTokenException;
 import kr.cseungjoo.chome_be.auth.port.in.RefreshUseCase;
-import kr.cseungjoo.chome_be.auth.application.result.RefreshResult;
+import kr.cseungjoo.chome_be.auth.port.in.RefreshResult;
 import kr.cseungjoo.chome_be.shared.port.out.RefreshTokenPort;
 import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.application.exception.UserNotFoundException;

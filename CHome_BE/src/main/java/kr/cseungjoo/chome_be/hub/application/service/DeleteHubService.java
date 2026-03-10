@@ -1,8 +1,8 @@
 package kr.cseungjoo.chome_be.hub.application.service;
 
-import kr.cseungjoo.chome_be.hub.application.command.DeleteHubCommand;
+import kr.cseungjoo.chome_be.hub.port.in.DeleteHubCommand;
 import kr.cseungjoo.chome_be.hub.application.exception.HubNotFoundException;
-import kr.cseungjoo.chome_be.hub.application.result.DeleteHubResult;
+import kr.cseungjoo.chome_be.hub.port.in.DeleteHubResult;
 import kr.cseungjoo.chome_be.hub.domain.Hub;
 import kr.cseungjoo.chome_be.hub.domain.HubPermission;
 import kr.cseungjoo.chome_be.hub.port.in.DeleteHubUseCase;
