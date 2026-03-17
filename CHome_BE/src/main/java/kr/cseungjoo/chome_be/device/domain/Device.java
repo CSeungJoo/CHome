@@ -2,9 +2,14 @@ package kr.cseungjoo.chome_be.device.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Device {
     private Long id;
@@ -36,5 +41,11 @@ public class Device {
         Device device = new Device(null, serialNumber, name, type, alias, hubId, Instant.now());
 
         return device;
+    }
+
+    public boolean canReadBy(long userId, List<DevicePermission> permissions) {
+        return permissions.stream().anyMatch(p ->
+                p.getAction() == DeviceAction.READ && p.getUserId() == userId
+        );
     }
 }

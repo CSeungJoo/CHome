@@ -12,7 +12,7 @@ public class DevicePermission {
     private final long deviceId;
     private final long userId;
 
-    static DevicePermission restore(
+    public static DevicePermission restore(
             Long id,
             DeviceAction action,
             long deviceId,
