@@ -4,22 +4,27 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.ChangeHubAliasRequest;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.RegisterHubRequest;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.SendHubCommandRequest;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.ChangeHubAliasResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.DeleteHubResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.GetAccessibleHubsResponse;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.RegisterHubResponse;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.SendHubCommandResponse;
 import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasCommand;
 import kr.cseungjoo.chome_be.hub.port.in.DeleteHubCommand;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsCommand;
 import kr.cseungjoo.chome_be.hub.port.in.RegisterHubCommand;
+import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandCommand;
 import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasResult;
 import kr.cseungjoo.chome_be.hub.port.in.DeleteHubResult;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsResult;
 import kr.cseungjoo.chome_be.hub.port.in.RegisterHubResult;
+import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandResult;
 import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.DeleteHubUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsUseCase;
 import kr.cseungjoo.chome_be.hub.port.in.RegisterHubUseCase;
+import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandUseCase;
 import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
@@ -40,6 +45,7 @@ public class HubController {
     private final FindAccessibleHubsUseCase findAccessibleHubsUseCase;
     private final DeleteHubUseCase deleteHubUseCase;
     private final ChangeHubAliasUseCase changeHubAliasUseCase;
+    private final SendHubCommandUseCase sendHubCommandUseCase;
 
     @PostMapping
     public ResponseEntity<BasicResponse.BaseResponse> registerHub(
@@ -136,5 +142,28 @@ public class HubController {
         );
 
         return BasicResponse.ok(changeHubAliasResponse);
+    }
+
+    @PostMapping("/{hubId}/command")
+    public ResponseEntity<BasicResponse.BaseResponse> sendCommand(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable Long hubId,
+            @Valid @RequestBody SendHubCommandRequest request
+    ) {
+        SendHubCommandResult result = sendHubCommandUseCase.execute(
+                new SendHubCommandCommand(
+                        authenticatedUser.userId(),
+                        hubId,
+                        request.type(),
+                        request.payload() != null ? request.payload() : java.util.Map.of()
+                )
+        );
+
+        SendHubCommandResponse response = new SendHubCommandResponse(
+                result.requestId(),
+                result.type()
+        );
+
+        return BasicResponse.ok(response);
     }
 }

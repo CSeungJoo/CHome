@@ -46,6 +46,11 @@ server:
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:3000}
+  mqtt:
+    broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
+    client-id: ${MQTT_CLIENT_ID:chome-backend}
+    username: ${MQTT_USERNAME:}
+    password: ${MQTT_PASSWORD:}
   email-token:
     secret: ${APP_EMAIL_TOKEN_SECRET}
   jwt:
