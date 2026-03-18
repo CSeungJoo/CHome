@@ -24,6 +24,12 @@ public class DevicePermissionRepositoryAdapter implements DevicePermissionReposi
     }
 
     @Override
+    public List<DevicePermission> findByUserIdAndDeviceId(long userId, long deviceId) {
+        return jpaDevicePermissionRepository.findByUserIdAndDeviceIds(userId, List.of(deviceId))
+                .stream().map(this::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
     public DevicePermission save(DevicePermission devicePermission) {
         DevicePermissionEntity devicePermissionEntity = jpaDevicePermissionRepository.save(toEntity(devicePermission));
 

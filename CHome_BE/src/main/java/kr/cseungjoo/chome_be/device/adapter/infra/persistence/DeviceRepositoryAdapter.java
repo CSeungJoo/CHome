@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -21,6 +22,11 @@ public class DeviceRepositoryAdapter implements DeviceRepositoryPort {
     public List<Device> findByHubId(long hubId) {
         return jpaDeviceRepository.findByHubId(hubId)
                 .stream().map(this::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Device> findById(long deviceId) {
+        return jpaDeviceRepository.findById(deviceId).map(this::toDomain);
     }
 
     @Override

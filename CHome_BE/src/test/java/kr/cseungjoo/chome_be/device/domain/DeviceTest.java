@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.device.domain;
 
+import kr.cseungjoo.chome_be.device.domain.exception.DevicePermissionDeniedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -96,6 +97,64 @@ class DeviceTest {
             DevicePermission updatePermission = DevicePermission.restore(1L, DeviceAction.UPDATE, 1L, 2L);
 
             assertThat(device.canReadBy(2L, List.of(updatePermission))).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("assertUpdatableBy")
+    class AssertUpdatableBy {
+
+        @Test
+        @DisplayName("UPDATE 권한이 있으면 수정 가능")
+        void canUpdateWithPermission() {
+            Device device = Device.restore(1L, "SN-D001", "온도센서", "sensor", "거실 온도", 1L, Instant.now());
+            DevicePermission updatePermission = DevicePermission.restore(1L, DeviceAction.UPDATE, 1L, 2L);
+
+            assertThatCode(() -> device.assertUpdatableBy(2L, List.of(updatePermission)))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("권한이 없으면 DevicePermissionDeniedException 발생")
+        void failWithoutPermission() {
+            Device device = Device.restore(1L, "SN-D001", "온도센서", "sensor", "거실 온도", 1L, Instant.now());
+
+            assertThatThrownBy(() -> device.assertUpdatableBy(2L, List.of()))
+                    .isInstanceOf(DevicePermissionDeniedException.class);
+        }
+
+        @Test
+        @DisplayName("다른 유저의 UPDATE 권한으로는 수정 불가")
+        void failWithOtherUsersPermission() {
+            Device device = Device.restore(1L, "SN-D001", "온도센서", "sensor", "거실 온도", 1L, Instant.now());
+            DevicePermission otherPermission = DevicePermission.restore(1L, DeviceAction.UPDATE, 1L, 3L);
+
+            assertThatThrownBy(() -> device.assertUpdatableBy(2L, List.of(otherPermission)))
+                    .isInstanceOf(DevicePermissionDeniedException.class);
+        }
+
+        @Test
+        @DisplayName("UPDATE가 아닌 다른 권한으로는 수정 불가")
+        void failWithNonUpdatePermission() {
+            Device device = Device.restore(1L, "SN-D001", "온도센서", "sensor", "거실 온도", 1L, Instant.now());
+            DevicePermission readPermission = DevicePermission.restore(1L, DeviceAction.READ, 1L, 2L);
+
+            assertThatThrownBy(() -> device.assertUpdatableBy(2L, List.of(readPermission)))
+                    .isInstanceOf(DevicePermissionDeniedException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("renameAlias")
+    class RenameAlias {
+
+        @Test
+        @DisplayName("별명을 변경한다")
+        void success() {
+            Device device = Device.create("SN-D001", "온도센서", "sensor", "거실 온도", 1L);
+            device.renameAlias("안방 온도");
+
+            assertThat(device.getAlias()).isEqualTo("안방 온도");
         }
     }
 }

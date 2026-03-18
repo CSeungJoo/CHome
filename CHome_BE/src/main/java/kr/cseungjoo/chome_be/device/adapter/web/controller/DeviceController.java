@@ -1,6 +1,13 @@
 package kr.cseungjoo.chome_be.device.adapter.web.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import kr.cseungjoo.chome_be.device.adapter.web.dto.request.ChangeDeviceAliasRequest;
+import kr.cseungjoo.chome_be.device.adapter.web.dto.response.ChangeDeviceAliasResponse;
 import kr.cseungjoo.chome_be.device.adapter.web.dto.response.GetAccessibleDevicesResponse;
+import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasCommand;
+import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasResult;
+import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasUseCase;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceCommand;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceResult;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceUseCase;
@@ -10,10 +17,7 @@ import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @ApiV1
 @RestController
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeviceController {
 
     private final FindAccessibleDeviceUseCase findAccessibleDeviceUseCase;
+    private final ChangeDeviceAliasUseCase changeDeviceAliasUseCase;
 
     @GetMapping
     public ResponseEntity<BasicResponse.BaseResponse> getAccessibleDevices(
@@ -48,5 +53,28 @@ public class DeviceController {
         );
 
         return BasicResponse.ok(response);
+    }
+
+    @PutMapping("/{deviceId}")
+    public ResponseEntity<BasicResponse.BaseResponse> changeDeviceAlias(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable Long deviceId,
+            @Valid @RequestBody @NotNull ChangeDeviceAliasRequest request
+    ) {
+
+        ChangeDeviceAliasResult result = changeDeviceAliasUseCase.execute(
+                new ChangeDeviceAliasCommand(
+                        deviceId,
+                        request.alias(),
+                        authenticatedUser.userId()
+                )
+        );
+
+        ChangeDeviceAliasResponse changeDeviceAliasResponse = new ChangeDeviceAliasResponse(
+                result.alias(),
+                result.changedAt()
+        );
+
+        return BasicResponse.ok(changeDeviceAliasResponse);
     }
 }

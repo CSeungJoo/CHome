@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.device.domain;
 
+import kr.cseungjoo.chome_be.device.domain.exception.DevicePermissionDeniedException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,5 +48,18 @@ public class Device {
         return permissions.stream().anyMatch(p ->
                 p.getAction() == DeviceAction.READ && p.getUserId() == userId
         );
+    }
+
+    public void assertUpdatableBy(long userId, List<DevicePermission> permissions) {
+        boolean updatable = permissions.stream().anyMatch(p ->
+                p.getAction() == DeviceAction.UPDATE && p.getUserId() == userId);
+
+        if (!updatable) {
+            throw new DevicePermissionDeniedException("업데이트 권한이 없습니다.");
+        }
+    }
+
+    public void renameAlias(String alias) {
+        this.alias = alias;
     }
 }
