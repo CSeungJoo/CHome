@@ -5,12 +5,16 @@ import jakarta.validation.constraints.NotNull;
 import kr.cseungjoo.chome_be.device.adapter.web.dto.request.ChangeDeviceAliasRequest;
 import kr.cseungjoo.chome_be.device.adapter.web.dto.response.ChangeDeviceAliasResponse;
 import kr.cseungjoo.chome_be.device.adapter.web.dto.response.GetAccessibleDevicesResponse;
+import kr.cseungjoo.chome_be.device.adapter.web.dto.response.GetDeviceDetailResponse;
 import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasCommand;
 import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasResult;
 import kr.cseungjoo.chome_be.device.port.in.ChangeDeviceAliasUseCase;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceCommand;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceResult;
 import kr.cseungjoo.chome_be.device.port.in.FindAccessibleDeviceUseCase;
+import kr.cseungjoo.chome_be.device.port.in.FindDeviceDetailCommand;
+import kr.cseungjoo.chome_be.device.port.in.FindDeviceDetailResult;
+import kr.cseungjoo.chome_be.device.port.in.FindDeviceDetailUseCase;
 import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceController {
 
     private final FindAccessibleDeviceUseCase findAccessibleDeviceUseCase;
+    private final FindDeviceDetailUseCase findDeviceDetailUseCase;
     private final ChangeDeviceAliasUseCase changeDeviceAliasUseCase;
 
     @GetMapping
@@ -50,6 +55,36 @@ public class DeviceController {
                                 d.alias()
                         )
                 ).toList()
+        );
+
+        return BasicResponse.ok(response);
+    }
+
+    @GetMapping("/{deviceId}")
+    public ResponseEntity<BasicResponse.BaseResponse> getDeviceDetail(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable Long deviceId
+    ) {
+        FindDeviceDetailResult result = findDeviceDetailUseCase.execute(
+                new FindDeviceDetailCommand(
+                        authenticatedUser.userId(),
+                        deviceId
+                )
+        );
+
+        GetDeviceDetailResponse response = new GetDeviceDetailResponse(
+                result.id(),
+                result.serialNumber(),
+                result.name(),
+                result.type(),
+                result.alias(),
+                result.commands().stream()
+                        .map(c -> new GetDeviceDetailResponse.CommandInfo(
+                                c.id(),
+                                c.command(),
+                                c.description()
+                        ))
+                        .toList()
         );
 
         return BasicResponse.ok(response);
