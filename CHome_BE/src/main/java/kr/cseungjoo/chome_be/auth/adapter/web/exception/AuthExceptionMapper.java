@@ -2,6 +2,7 @@ package kr.cseungjoo.chome_be.auth.adapter.web.exception;
 
 import kr.cseungjoo.chome_be.auth.application.exception.AuthenticationFailedException;
 import kr.cseungjoo.chome_be.auth.application.exception.EmailNotVerifiedException;
+import kr.cseungjoo.chome_be.auth.application.exception.HubAuthenticationFailedException;
 import kr.cseungjoo.chome_be.auth.application.exception.InvalidRefreshTokenException;
 import kr.cseungjoo.chome_be.auth.domain.exception.AuthException;
 import kr.cseungjoo.chome_be.shared.adapter.web.exception.ExceptionMapper;
@@ -26,6 +27,8 @@ public class AuthExceptionMapper implements ExceptionMapper {
             return new WebExceptionMetadata(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4010", LogLevel.WARN);
         } else if (e instanceof EmailNotVerifiedException) {
             return new WebExceptionMetadata(e.getMessage(), HttpStatus.FORBIDDEN, "A4030", LogLevel.WARN);
+        } else if (e instanceof HubAuthenticationFailedException) {
+            return new WebExceptionMetadata(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4012", LogLevel.WARN);
         } else if (e instanceof InvalidRefreshTokenException) {
             return new WebExceptionMetadata(e.getMessage(), HttpStatus.UNAUTHORIZED, "A4011", LogLevel.WARN);
         }
