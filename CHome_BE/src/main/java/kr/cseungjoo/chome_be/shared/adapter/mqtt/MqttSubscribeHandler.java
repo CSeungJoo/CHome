@@ -8,10 +8,8 @@ import kr.cseungjoo.chome_be.shared.port.out.SseEmitterPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +23,15 @@ public class MqttSubscribeHandler implements IMqttMessageListener {
     private static final String RESULT_TOPIC = "hub/+/result";
     private static final String EVENT_TOPIC = "hub/+/event";
 
-    private final MqttClient mqttClient;
+    private final MqttClientManager mqttClientManager;
     private final ObjectMapper objectMapper;
     private final HubRepositoryPort hubRepositoryPort;
     private final SseEmitterPort sseEmitterPort;
 
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(MqttConnectedEvent.class)
     public void subscribe() throws MqttException {
-        mqttClient.subscribe(RESULT_TOPIC, 1, this);
-        mqttClient.subscribe(EVENT_TOPIC, 1, this);
+        mqttClientManager.getClient().subscribe(RESULT_TOPIC, 1, this);
+        mqttClientManager.getClient().subscribe(EVENT_TOPIC, 1, this);
         log.info("MQTT 구독 시작: {}, {}", RESULT_TOPIC, EVENT_TOPIC);
     }
 
