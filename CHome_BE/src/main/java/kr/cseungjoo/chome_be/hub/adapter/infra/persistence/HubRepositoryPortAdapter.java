@@ -44,6 +44,11 @@ public class HubRepositoryPortAdapter implements HubRepositoryPort {
     }
 
     @Override
+    public Optional<Hub> findBySerialNumber(String serialNumber) {
+        return jpaHubRepository.findBySerialNumber(serialNumber).map(this::toDomain);
+    }
+
+    @Override
     public boolean exists(String serialNumber) {
         boolean exists = jpaHubRepository.existsBySerialNumber(serialNumber);
 

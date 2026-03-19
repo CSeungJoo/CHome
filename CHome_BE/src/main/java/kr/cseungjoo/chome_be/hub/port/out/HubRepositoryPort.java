@@ -10,6 +10,7 @@ public interface HubRepositoryPort {
     Optional<Hub> findById(long hubId);
     Page<Hub> findByUserId(long userId, Pageable pageable);
     boolean exists(String serialNumber);
+    Optional<Hub> findBySerialNumber(String serialNumber);
     Hub save(Hub hub);
 
     void delete(Hub hub);

@@ -3,6 +3,8 @@ package kr.cseungjoo.chome_be.hub.adapter.infra.persistence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,4 +26,5 @@ public interface JpaHubRepository extends JpaRepository<HubEntity, Long> {
     );
 
     boolean existsBySerialNumber(String serialNumber);
+    Optional<HubEntity> findBySerialNumber(String serialNumber);
 }
