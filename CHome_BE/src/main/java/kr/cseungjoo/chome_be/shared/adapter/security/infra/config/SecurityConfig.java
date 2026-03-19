@@ -30,6 +30,7 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/*/users", "/api/*/users/verify", "/api/*/auth/login", "/api/*/auth/refresh", "/api/*/mqtt/auth", "/api/*/mqtt/acl", "/h2-console/**").permitAll()
+                        .requestMatchers("/actuator/prometheus", "/atuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
