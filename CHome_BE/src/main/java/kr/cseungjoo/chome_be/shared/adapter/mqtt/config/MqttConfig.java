@@ -1,6 +1,7 @@
 package kr.cseungjoo.chome_be.shared.adapter.mqtt.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 @EnableConfigurationProperties(MqttProperties.class)
 @RequiredArgsConstructor
@@ -41,7 +43,15 @@ public class MqttConfig {
                 mqttProperties.getClientId(),
                 new MemoryPersistence()
         );
-        client.connect(mqttConnectOptions);
+
+        try {
+            client.connect(mqttConnectOptions);
+            log.info("MQTT 브로커 연결 성공: {}", mqttProperties.getBrokerUrl());
+        } catch (MqttException e) {
+            log.warn("MQTT 브로커 연결 실패, 자동 재연결 대기: {}", mqttProperties.getBrokerUrl());
+            client.reconnect();
+        }
+
         return client;
     }
 }

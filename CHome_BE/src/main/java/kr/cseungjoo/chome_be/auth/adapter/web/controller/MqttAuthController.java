@@ -1,9 +1,12 @@
 package kr.cseungjoo.chome_be.auth.adapter.web.controller;
 
 import jakarta.validation.Valid;
+import kr.cseungjoo.chome_be.auth.adapter.web.dto.request.MqttAclRequest;
 import kr.cseungjoo.chome_be.auth.adapter.web.dto.request.MqttAuthRequest;
 import kr.cseungjoo.chome_be.auth.port.in.AuthenticateHubCommand;
 import kr.cseungjoo.chome_be.auth.port.in.AuthenticateHubUseCase;
+import kr.cseungjoo.chome_be.auth.port.in.CheckMqttAclCommand;
+import kr.cseungjoo.chome_be.auth.port.in.CheckMqttAclUseCase;
 import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MqttAuthController {
 
     private final AuthenticateHubUseCase authenticateHubUseCase;
+    private final CheckMqttAclUseCase checkMqttAclUseCase;
 
     @PostMapping("/auth")
     public ResponseEntity<BasicResponse.BaseResponse> authenticate(
@@ -34,5 +38,20 @@ public class MqttAuthController {
         );
 
         return BasicResponse.ok("인증 성공");
+    }
+
+    @PostMapping("/acl")
+    public ResponseEntity<BasicResponse.BaseResponse> checkAcl(
+            @Valid @RequestBody MqttAclRequest request
+    ) {
+        checkMqttAclUseCase.execute(
+                new CheckMqttAclCommand(
+                        request.username(),
+                        request.topic(),
+                        request.acc()
+                )
+        );
+
+        return BasicResponse.ok("ACL 허용");
     }
 }

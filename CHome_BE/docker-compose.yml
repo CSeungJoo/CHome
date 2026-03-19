@@ -14,7 +14,7 @@ services:
       REDIS_HOST: redis
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_PORT: 6379
-      MQTT_BROKER_URL: ${MQTT_BROKER_URL}
+      MQTT_BROKER_URL: tcp://mosquitto:1883
       MQTT_CLIENT_ID: ${MQTT_CLIENT_ID:-chome-backend}
       MQTT_USERNAME: ${MQTT_USERNAME:-}
       MQTT_PASSWORD: ${MQTT_PASSWORD:-}
@@ -28,6 +28,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mosquitto:
+        condition: service_started
+    restart: unless-stopped
+
+  mosquitto:
+    build: ./mosquitto
+    container_name: chome-mosquitto
+    ports:
+      - "1883:1883"
     restart: unless-stopped
 
   mysql:
