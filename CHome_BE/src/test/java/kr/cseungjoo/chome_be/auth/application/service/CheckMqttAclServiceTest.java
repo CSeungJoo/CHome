@@ -2,8 +2,10 @@ package kr.cseungjoo.chome_be.auth.application.service;
 
 import kr.cseungjoo.chome_be.auth.application.exception.HubAuthenticationFailedException;
 import kr.cseungjoo.chome_be.auth.port.in.CheckMqttAclCommand;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,6 +13,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CheckMqttAclServiceTest {
 
     private final CheckMqttAclService checkMqttAclService = new CheckMqttAclService();
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(checkMqttAclService, "backendUsername", "chome-backend");
+    }
 
     @Test
     @DisplayName("자기 허브의 command 토픽에 접근할 수 있다")
@@ -64,5 +71,14 @@ class CheckMqttAclServiceTest {
 
         assertThatThrownBy(() -> checkMqttAclService.execute(command))
                 .isInstanceOf(HubAuthenticationFailedException.class);
+    }
+
+    @Test
+    @DisplayName("백엔드 클라이언트는 모든 토픽에 접근할 수 있다")
+    void allowBackendClient() {
+        CheckMqttAclCommand command = new CheckMqttAclCommand("chome-backend", "hub/HUB-001/command", 1);
+
+        assertThatCode(() -> checkMqttAclService.execute(command))
+                .doesNotThrowAnyException();
     }
 }
