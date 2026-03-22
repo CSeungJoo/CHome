@@ -58,7 +58,13 @@ pipeline {
                             git clone https://\${GIT_USER}:\${GIT_TOKEN}@github.com/CSeungJoo/cseungjoo-deploy.git deploy-repo
                             cd deploy-repo
 
-                            sed -i 's|image: ${REGISTRY}/${IMAGE_NAME}:.*|image: ${REGISTRY}/${IMAGE_NAME}:${env.IMAGE_TAG}|' manifests/projects/chome-be/deployment.yaml
+                            MANIFEST_FILE="manifests/projects/chome-be/deployment.yaml"
+                            if [ ! -f "\$MANIFEST_FILE" ]; then
+                                echo "ERROR: Manifest file not found"
+                                exit 1
+                            fi
+                            sed -i 's|image: ${REGISTRY}/${IMAGE_NAME}:.*|image: ${REGISTRY}/${IMAGE_NAME}:${env.IMAGE_TAG}|' \$MANIFEST_FILE
+                            grep -q "image: ${REGISTRY}/${IMAGE_NAME}:${env.IMAGE_TAG}" \$MANIFEST_FILE || { echo "ERROR: Image update failed"; exit 1; }
 
                             git config user.email "jenkins@cseungjoo.kr"
                             git config user.name "Jenkins CI"
