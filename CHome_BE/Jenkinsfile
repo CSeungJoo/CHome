@@ -69,7 +69,7 @@ pipeline {
                             git config user.email "jenkins@cseungjoo.kr"
                             git config user.name "Jenkins CI"
                             git add manifests/projects/chome-be/deployment.yaml
-                            git commit -m "chome-be: update image to ${env.IMAGE_TAG}"
+                            git diff --cached --quiet || git commit -m "chome-be: update image to ${env.IMAGE_TAG}"
                             git push origin ${DEPLOY_BRANCH}
                         """
                     }
