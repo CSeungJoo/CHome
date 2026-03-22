@@ -31,7 +31,8 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    def imageTag = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
+                    def gitCommit = env.GIT_COMMIT ?: sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    def imageTag = "${env.BUILD_NUMBER}-${gitCommit.take(7)}"
                     env.IMAGE_TAG = imageTag
 
                     sh """
