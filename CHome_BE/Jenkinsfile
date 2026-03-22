@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGISTRY = 'localhost:30500'
         IMAGE_NAME = 'chome-be'
-        DEPLOY_REPO = 'https://github.com/CSeungJoo/cseungjoo-deploy.git'
+        DEPLOY_REPO = 'git@github.com:CSeungJoo/cseungjoo-deploy.git'
         DEPLOY_BRANCH = 'main'
     }
 
@@ -48,14 +48,10 @@ pipeline {
         stage('Update Deploy Manifest') {
             steps {
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'github-credentials',
-                        usernameVariable: 'GIT_USER',
-                        passwordVariable: 'GIT_TOKEN'
-                    )]) {
+                    sshagent(credentials: ['github-ssh']) {
                         sh """
                             rm -rf deploy-repo
-                            git clone https://\${GIT_USER}:\${GIT_TOKEN}@github.com/CSeungJoo/cseungjoo-deploy.git deploy-repo
+                            git clone ${DEPLOY_REPO} deploy-repo
                             cd deploy-repo
 
                             MANIFEST_FILE="manifests/projects/chome-be/deployment.yaml"
