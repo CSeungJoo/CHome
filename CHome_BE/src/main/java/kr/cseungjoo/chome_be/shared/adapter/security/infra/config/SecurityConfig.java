@@ -4,6 +4,7 @@ import kr.cseungjoo.chome_be.shared.adapter.security.infra.filter.JwtAuthenticat
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
@@ -29,8 +30,9 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/*/users", "/api/*/users/verify", "/api/*/auth/login", "/api/*/auth/refresh", "/api/*/mqtt/auth", "/api/*/mqtt/acl", "/h2-console/**").permitAll()
-                        .requestMatchers("/actuator/prometheus", "/atuator/health").permitAll()
+                        .requestMatchers("/actuator/prometheus", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

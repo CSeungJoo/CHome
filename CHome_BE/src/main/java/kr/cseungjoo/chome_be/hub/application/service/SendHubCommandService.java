@@ -9,6 +9,7 @@ import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandUseCase;
 import kr.cseungjoo.chome_be.hub.port.out.HubPermissionRepositoryPort;
 import kr.cseungjoo.chome_be.hub.port.out.HubRepositoryPort;
 import kr.cseungjoo.chome_be.shared.adapter.mqtt.message.HubMessage;
+import kr.cseungjoo.chome_be.shared.adapter.idempotency.Idempotent;
 import kr.cseungjoo.chome_be.shared.port.out.MqttPublishPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class SendHubCommandService implements SendHubCommandUseCase {
 
     @Override
     @Transactional(readOnly = true)
+    @Idempotent(prefix = "mqtt-cmd", ttlMillis = 1000)
     public SendHubCommandResult execute(SendHubCommandCommand command) {
         Hub hub = hubRepositoryPort.findById(command.hubId())
                 .orElseThrow(() -> new HubNotFoundException("허브를 찾을 수 없습니다."));
