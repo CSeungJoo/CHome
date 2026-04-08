@@ -44,7 +44,7 @@ export default function DeviceDetailPage({
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -63,11 +63,11 @@ export default function DeviceDetailPage({
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-            <HiOutlineCpuChip className="w-6 h-6 text-green-600" />
+          <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
+            <HiOutlineCpuChip className="w-6 h-6 text-green-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-100">
               {device.alias || device.name}
             </h1>
             <p className="text-sm text-gray-500">{device.type}</p>
@@ -85,29 +85,29 @@ export default function DeviceDetailPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">기본 정보</h2>
+          <h2 className="text-lg font-semibold text-gray-100 mb-4">기본 정보</h2>
           <dl className="space-y-3">
             <div className="flex justify-between">
               <dt className="text-sm text-gray-500">ID</dt>
-              <dd className="text-sm font-medium text-gray-900">{device.id}</dd>
+              <dd className="text-sm font-medium text-gray-200">{device.id}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-sm text-gray-500">시리얼 번호</dt>
-              <dd className="text-sm font-medium text-gray-900">
+              <dd className="text-sm font-medium text-gray-200">
                 {device.serialNumber}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-sm text-gray-500">이름</dt>
-              <dd className="text-sm font-medium text-gray-900">{device.name}</dd>
+              <dd className="text-sm font-medium text-gray-200">{device.name}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-sm text-gray-500">타입</dt>
-              <dd className="text-sm font-medium text-gray-900">{device.type}</dd>
+              <dd className="text-sm font-medium text-gray-200">{device.type}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-sm text-gray-500">별명</dt>
-              <dd className="text-sm font-medium text-gray-900">
+              <dd className="text-sm font-medium text-gray-200">
                 {device.alias || "-"}
               </dd>
             </div>
@@ -115,7 +115,7 @@ export default function DeviceDetailPage({
         </Card>
 
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="text-lg font-semibold text-gray-100 mb-4">
             <HiOutlineCommandLine className="w-5 h-5 inline mr-2" />
             사용 가능한 명령어
           </h2>
@@ -126,10 +126,10 @@ export default function DeviceDetailPage({
               {device.commands.map((cmd) => (
                 <div
                   key={cmd.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-800 rounded-lg"
                 >
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-200">
                       {cmd.command}
                     </p>
                     <p className="text-xs text-gray-500">{cmd.description}</p>

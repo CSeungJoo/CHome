@@ -26,7 +26,7 @@ export default function HubsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">허브 관리</h1>
+        <h1 className="text-2xl font-bold text-gray-100">허브 관리</h1>
         <Button onClick={() => setShowRegister(true)}>
           <HiOutlinePlus className="w-4 h-4 mr-1" />
           허브 등록
@@ -35,7 +35,7 @@ export default function HubsPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
         </div>
       ) : data?.accessibleHubs.length === 0 ? (
         <Card>
@@ -53,11 +53,11 @@ export default function HubsPage() {
             {data?.accessibleHubs.map((hub) => (
               <Card key={hub.id}>
                 <div className="flex items-start justify-between mb-3">
-                  <Link href={`/hubs/${hub.id}`} className="hover:text-blue-600">
-                    <h3 className="font-semibold text-gray-900">{hub.alias}</h3>
+                  <Link href={`/hubs/${hub.id}`} className="hover:text-blue-400">
+                    <h3 className="font-semibold text-gray-100">{hub.alias}</h3>
                   </Link>
                   {hub.isOwner && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-full">
                       소유자
                     </span>
                   )}
@@ -79,7 +79,7 @@ export default function HubsPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(hub.id)}
-                      className="text-red-600 hover:bg-red-50"
+                      className="text-red-400 hover:bg-red-900/30"
                     >
                       <HiOutlineTrash className="w-4 h-4 mr-1" />
                       삭제
@@ -100,7 +100,7 @@ export default function HubsPage() {
               >
                 이전
               </Button>
-              <span className="flex items-center text-sm text-gray-600 px-4">
+              <span className="flex items-center text-sm text-gray-400 px-4">
                 {page + 1} / {Math.ceil(data.totalCount / data.size)}
               </span>
               <Button

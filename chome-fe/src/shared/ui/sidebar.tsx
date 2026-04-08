@@ -27,9 +27,9 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col min-h-screen">
+    <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col min-h-screen">
       <div className="p-6">
-        <h1 className="text-xl font-bold text-gray-900">CHome</h1>
+        <h1 className="text-xl font-bold text-gray-100">CHome</h1>
         <p className="text-xs text-gray-500 mt-1">Smart Home Dashboard</p>
       </div>
 
@@ -42,8 +42,8 @@ export function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mb-1 transition-colors ${
                 isActive
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-blue-600/20 text-blue-400"
+                  : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
               }`}
             >
               <item.icon className="w-5 h-5" />
@@ -53,10 +53,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-gray-200">
+      <div className="p-3 border-t border-gray-800">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 w-full transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-gray-200 w-full transition-colors"
         >
           <HiOutlineArrowRightOnRectangle className="w-5 h-5" />
           로그아웃

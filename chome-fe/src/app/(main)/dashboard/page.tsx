@@ -10,17 +10,17 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">대시보드</h1>
+      <h1 className="text-2xl font-bold text-gray-100 mb-6">대시보드</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <HiOutlineCube className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
+              <HiOutlineCube className="w-6 h-6 text-blue-400" />
             </div>
             <div>
               <p className="text-sm text-gray-500">등록된 허브</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-100">
                 {isLoading ? "-" : hubsData?.totalCount ?? 0}
               </p>
             </div>
@@ -29,34 +29,34 @@ export default function DashboardPage() {
 
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <HiOutlineCpuChip className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
+              <HiOutlineCpuChip className="w-6 h-6 text-green-400" />
             </div>
             <div>
               <p className="text-sm text-gray-500">디바이스</p>
-              <p className="text-2xl font-bold text-gray-900">-</p>
+              <p className="text-2xl font-bold text-gray-100">-</p>
             </div>
           </div>
         </Card>
 
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <HiOutlineSignal className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center">
+              <HiOutlineSignal className="w-6 h-6 text-purple-400" />
             </div>
             <div>
               <p className="text-sm text-gray-500">SSE 연결</p>
-              <p className="text-2xl font-bold text-gray-900">-</p>
+              <p className="text-2xl font-bold text-gray-100">-</p>
             </div>
           </div>
         </Card>
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">내 허브</h2>
+      <h2 className="text-lg font-semibold text-gray-100 mb-4">내 허브</h2>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
         </div>
       ) : hubsData?.accessibleHubs.length === 0 ? (
         <Card>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
             <p className="text-gray-500 mb-4">등록된 허브가 없습니다</p>
             <Link
               href="/hubs"
-              className="text-blue-600 hover:underline text-sm font-medium"
+              className="text-blue-400 hover:underline text-sm font-medium"
             >
               허브 등록하러 가기
             </Link>
@@ -74,16 +74,16 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {hubsData?.accessibleHubs.map((hub) => (
             <Link key={hub.id} href={`/hubs/${hub.id}`}>
-              <Card className="hover:border-blue-300 hover:shadow-md transition-all cursor-pointer">
+              <Card className="hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">{hub.alias}</p>
+                    <p className="font-medium text-gray-100">{hub.alias}</p>
                     <p className="text-xs text-gray-500 mt-1">
                       S/N: {hub.serialNumber}
                     </p>
                   </div>
                   {hub.isOwner && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-full">
                       소유자
                     </span>
                   )}

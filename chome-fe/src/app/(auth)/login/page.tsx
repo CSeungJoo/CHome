@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { AxiosError } from "axios";
 import { Button, Input } from "@/shared/ui";
 import { useLogin } from "@/features/auth/hooks";
 
@@ -15,6 +16,13 @@ const loginSchema = z.object({
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof AxiosError && error.response?.data?.data?.message) {
+    return error.response.data.data.message;
+  }
+  return "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.";
+}
 
 export default function LoginPage() {
   return (
@@ -45,19 +53,19 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">CHome</h1>
+          <h1 className="text-3xl font-bold text-gray-100">CHome</h1>
           <p className="text-gray-500 mt-2">스마트 홈에 로그인하세요</p>
         </div>
 
         {registered && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+          <div className="mb-4 p-3 bg-green-900/50 border border-green-700 rounded-lg text-sm text-green-400">
             회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.
           </div>
         )}
 
         {loginMutation.isError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-            로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.
+          <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-sm text-red-400">
+            {getErrorMessage(loginMutation.error)}
           </div>
         )}
 
@@ -88,7 +96,7 @@ function LoginContent() {
 
         <p className="text-center text-sm text-gray-500 mt-6">
           계정이 없으신가요?{" "}
-          <Link href="/register" className="text-blue-600 hover:underline">
+          <Link href="/register" className="text-blue-400 hover:underline">
             회원가입
           </Link>
         </p>

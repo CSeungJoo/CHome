@@ -49,11 +49,46 @@ export async function sendHubCommand(hubId: number, req: SendHubCommandRequest) 
   return data.data;
 }
 
-export function connectHubSSE(hubId: number, token: string) {
+export function connectHubSSE(
+  hubId: number,
+  token: string,
+  onMessage: (data: string) => void,
+  onOpen: () => void,
+  onError: () => void
+) {
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
-  const eventSource = new EventSource(
-    `${baseUrl}/hubs/${hubId}/sse?token=${token}`
-  );
-  return eventSource;
+  const controller = new AbortController();
+
+  fetch(`${baseUrl}/hubs/${hubId}/sse`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: controller.signal,
+  })
+    .then(async (res) => {
+      if (!res.ok || !res.body) {
+        onError();
+        return;
+      }
+      onOpen();
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (line.startsWith("data:")) {
+            onMessage(line.slice(5).trim());
+          }
+        }
+      }
+      onError();
+    })
+    .catch(() => onError());
+
+  return controller;
 }

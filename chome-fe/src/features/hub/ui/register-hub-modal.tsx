@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { AxiosError } from "axios";
 import { Button, Input, Modal } from "@/shared/ui";
 import { useRegisterHub } from "../hooks";
 
@@ -12,6 +13,13 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof AxiosError && error.response?.data?.data?.message) {
+    return error.response.data.data.message;
+  }
+  return "허브 등록에 실패했습니다. 다시 시도해주세요.";
+}
 
 interface Props {
   isOpen: boolean;
@@ -39,8 +47,8 @@ export function RegisterHubModal({ isOpen, onClose }: Props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="허브 등록">
       {mutation.isError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-          허브 등록에 실패했습니다. 이미 등록된 시리얼 번호일 수 있습니다.
+        <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-sm text-red-400">
+          {getErrorMessage(mutation.error)}
         </div>
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
