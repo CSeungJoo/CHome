@@ -4,18 +4,27 @@
 MQTTManager::MessageCallback MQTTManager::userCallback = nullptr;
 
 MQTTManager::MQTTManager()
-    : mqttClient(wifiClient), broker(nullptr), port(0), lastReconnectAttempt(0) {}
+    : mqttClient(wifiClient), broker(nullptr), port(0),
+      lastReconnectAttempt(0), serialNumber(nullptr) {}
 
-bool MQTTManager::begin(const char* broker, uint16_t port) {
+bool MQTTManager::begin(const char* broker, uint16_t port, const char* serialNumber) {
     this->broker = broker;
     this->port = port;
+    this->serialNumber = serialNumber;
 
-    Serial.printf("Initializing MQTT... Broker: %s:%d\n", broker, port);
+    // 토픽 조립: hub/{serialNumber}/command | result | event
+    snprintf(commandTopic, sizeof(commandTopic), "hub/%s/command", serialNumber);
+    snprintf(resultTopic, sizeof(resultTopic), "hub/%s/result", serialNumber);
+    snprintf(eventTopic, sizeof(eventTopic), "hub/%s/event", serialNumber);
+
+    Serial.printf("MQTT topics — cmd: %s, result: %s, event: %s\n",
+                  commandTopic, resultTopic, eventTopic);
 
     mqttClient.setServer(broker, port);
     mqttClient.setCallback(mqttCallback);
     mqttClient.setKeepAlive(60);
     mqttClient.setSocketTimeout(10);
+    mqttClient.setBufferSize(1024);
 
     return connect();
 }
@@ -25,27 +34,17 @@ bool MQTTManager::connect() {
 
     Serial.print("Connecting to MQTT broker...");
 
-    bool connected = false;
-    if (strlen(Config::MQTT_USERNAME) > 0) {
-        connected = mqttClient.connect(
-            Config::MQTT_CLIENT_ID,
-            Config::MQTT_USERNAME,
-            Config::MQTT_PASSWORD
-        );
-    } else {
-        connected = mqttClient.connect(Config::MQTT_CLIENT_ID);
-    }
+    bool connected = mqttClient.connect(
+        Config::MQTT_CLIENT_ID,
+        Config::MQTT_USERNAME,
+        Config::MQTT_PASSWORD
+    );
 
     if (connected) {
         Serial.println(" Connected!");
-
-        // Subscribe to control topics
-        mqttClient.subscribe(Config::MQTT_TOPIC_BLE_CONTROL);
-        mqttClient.subscribe(Config::MQTT_TOPIC_CONFIG);
-
-        // Publish online status
+        mqttClient.subscribe(commandTopic, 1);
+        Serial.printf("Subscribed to: %s\n", commandTopic);
         publishStatus("online");
-
         return true;
     } else {
         Serial.printf(" Failed! State: %d\n", mqttClient.state());
@@ -77,7 +76,7 @@ bool MQTTManager::publish(const char* topic, const char* payload, bool retained)
 
     bool result = mqttClient.publish(topic, payload, retained);
     if (result) {
-        Serial.printf("Published to %s: %s\n", topic, payload);
+        Serial.printf("Published to %s\n", topic);
     } else {
         Serial.printf("Failed to publish to %s\n", topic);
     }
@@ -85,54 +84,53 @@ bool MQTTManager::publish(const char* topic, const char* payload, bool retained)
     return result;
 }
 
-bool MQTTManager::publishBLEDiscovery(const char* deviceAddress, const char* deviceName) {
+bool MQTTManager::publishResult(const char* type, const char* requestId, JsonObject payload) {
     JsonDocument doc;
-    doc["type"] = "discovery";
-    doc["address"] = deviceAddress;
-    doc["name"] = deviceName;
-    doc["timestamp"] = millis();
+    doc["kind"] = "RESULT";
+    doc["type"] = type;
+    doc["requestId"] = requestId;
+    doc["timestamp"] = millis() / 1000;
+    if (!payload.isNull()) {
+        doc["payload"] = payload;
+    } else {
+        doc.createNestedObject("payload");
+    }
 
-    String payload;
-    serializeJson(doc, payload);
-
-    return publish(Config::MQTT_TOPIC_BLE_DISCOVERED, payload.c_str());
+    String json;
+    serializeJson(doc, json);
+    return publish(resultTopic, json.c_str());
 }
 
-bool MQTTManager::publishBLEData(const char* deviceAddress, const char* characteristic, const uint8_t* data, size_t length) {
+bool MQTTManager::publishEvent(const char* type, JsonObject payload) {
     JsonDocument doc;
-    doc["type"] = "data";
-    doc["address"] = deviceAddress;
-    doc["characteristic"] = characteristic;
-    doc["timestamp"] = millis();
-
-    // Convert byte array to hex string
-    String hexData = "";
-    for (size_t i = 0; i < length; i++) {
-        char buf[3];
-        sprintf(buf, "%02X", data[i]);
-        hexData += buf;
+    doc["kind"] = "EVENT";
+    doc["type"] = type;
+    doc["timestamp"] = millis() / 1000;
+    if (!payload.isNull()) {
+        doc["payload"] = payload;
+    } else {
+        doc.createNestedObject("payload");
     }
-    doc["data"] = hexData;
-    doc["length"] = length;
 
-    String payload;
-    serializeJson(doc, payload);
-
-    String topic = String(Config::MQTT_TOPIC_BLE_DATA) + "/" + String(deviceAddress);
-    return publish(topic.c_str(), payload.c_str());
+    String json;
+    serializeJson(doc, json);
+    return publish(eventTopic, json.c_str());
 }
 
 bool MQTTManager::publishStatus(const char* status) {
     JsonDocument doc;
-    doc["status"] = status;
-    doc["version"] = Config::HUB_VERSION;
-    doc["timestamp"] = millis();
-    doc["uptime"] = millis() / 1000;
+    doc["kind"] = "EVENT";
+    doc["type"] = "STATUS";
+    doc["timestamp"] = millis() / 1000;
 
-    String payload;
-    serializeJson(doc, payload);
+    JsonObject payload = doc["payload"].to<JsonObject>();
+    payload["status"] = status;
+    payload["version"] = Config::HUB_VERSION;
+    payload["uptime"] = millis() / 1000;
 
-    return publish(Config::MQTT_TOPIC_STATUS, payload.c_str(), true);
+    String json;
+    serializeJson(doc, json);
+    return publish(eventTopic, json.c_str());
 }
 
 void MQTTManager::setMessageCallback(MessageCallback callback) {
@@ -140,12 +138,11 @@ void MQTTManager::setMessageCallback(MessageCallback callback) {
 }
 
 void MQTTManager::mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
-    // Null-terminate the payload
     char message[length + 1];
     memcpy(message, payload, length);
     message[length] = '\0';
 
-    Serial.printf("MQTT Message [%s]: %s\n", topic, message);
+    Serial.printf("MQTT [%s]: %s\n", topic, message);
 
     if (userCallback) {
         userCallback(topic, message);
