@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.shared.adapter.web.exception;
 
+import kr.cseungjoo.chome_be.shared.adapter.idempotency.DuplicateRequestException;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,12 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     private final List<ExceptionMapper> mappers;
+
+    @ExceptionHandler(DuplicateRequestException.class)
+    public ResponseEntity<BasicResponse.BaseResponse> duplicateRequestHandle(DuplicateRequestException e) {
+        log.warn("duplicate request: {}", e.getMessage());
+        return BasicResponse.error(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS, "S4290");
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BasicResponse.BaseResponse> validationHandle(MethodArgumentNotValidException e) {

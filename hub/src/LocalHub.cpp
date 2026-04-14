@@ -12,19 +12,18 @@ void LocalHub::begin() {
     Serial.println("\n\n===========================================");
     Serial.println("       LocalHub Starting...");
     Serial.printf("       Version: %s\n", Config::HUB_VERSION);
+    Serial.printf("       Serial:  %s\n", Config::SERIAL_NUMBER);
     Serial.println("===========================================\n");
 
     // Initialize WiFi
     Serial.println("[1/3] Initializing WiFi...");
     if (!wifi.begin()) {
         Serial.println("ERROR: WiFi initialization failed!");
-        Serial.println("Check your WiFi credentials in Config.h");
-        // Continue anyway - will retry in loop
     }
 
     // Initialize MQTT
     Serial.println("\n[2/3] Initializing MQTT...");
-    mqtt.begin(Config::MQTT_BROKER, Config::MQTT_PORT);
+    mqtt.begin(Config::MQTT_BROKER, Config::MQTT_PORT, Config::SERIAL_NUMBER);
     mqtt.setMessageCallback(onMQTTMessage);
 
     // Initialize BLE
@@ -41,16 +40,10 @@ void LocalHub::begin() {
 }
 
 void LocalHub::loop() {
-    // Reconnect WiFi if needed
     wifi.reconnect();
-
-    // Handle MQTT
     mqtt.loop();
-
-    // Handle BLE
     ble.loop();
 
-    // Periodic status print
     uint32_t now = millis();
     if (now - lastStatusPrint > STATUS_PRINT_INTERVAL_MS) {
         lastStatusPrint = now;
@@ -84,7 +77,12 @@ void LocalHub::onDeviceDiscovered(const char* address, const char* name) {
     Serial.printf(">>> Device discovered: %s (%s)\n", name, address);
 
     if (instance && instance->mqtt.isConnected()) {
-        instance->mqtt.publishBLEDiscovery(address, name);
+        JsonDocument doc;
+        JsonObject payload = doc.to<JsonObject>();
+        payload["address"] = address;
+        payload["name"] = name;
+
+        instance->mqtt.publishEvent("BLE_DISCOVERY", payload);
     }
 }
 
@@ -96,72 +94,152 @@ void LocalHub::onBLEDataReceived(const char* address, const char* characteristic
     Serial.println();
 
     if (instance && instance->mqtt.isConnected()) {
-        instance->mqtt.publishBLEData(address, characteristic, data, length);
+        JsonDocument doc;
+        JsonObject payload = doc.to<JsonObject>();
+        payload["address"] = address;
+        payload["characteristic"] = characteristic;
+
+        String hexData = "";
+        for (size_t i = 0; i < length; i++) {
+            char buf[3];
+            sprintf(buf, "%02X", data[i]);
+            hexData += buf;
+        }
+        payload["data"] = hexData;
+        payload["length"] = length;
+
+        instance->mqtt.publishEvent("BLE_DATA", payload);
     }
 }
 
 void LocalHub::onMQTTMessage(const char* topic, const char* payload) {
-    Serial.printf(">>> MQTT Message [%s]: %s\n", topic, payload);
+    Serial.printf(">>> Command received [%s]\n", topic);
 
     if (instance) {
-        instance->handleMQTTControl(topic, payload);
+        instance->handleCommand(payload);
     }
 }
 
-void LocalHub::handleMQTTControl(const char* topic, const char* payload) {
+// ====== Command Handler — 백엔드 HubMessage 포맷 ======
+// { kind: "COMMAND", type: "BLE_SCAN", requestId: "uuid", timestamp: epoch, payload: {} }
+
+void LocalHub::handleCommand(const char* payload) {
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, payload);
 
     if (error) {
-        Serial.printf("JSON parsing failed: %s\n", error.c_str());
+        Serial.printf("JSON parse failed: %s\n", error.c_str());
         return;
     }
 
-    String topicStr(topic);
+    const char* kind = doc["kind"];
+    const char* type = doc["type"];
+    const char* requestId = doc["requestId"];
 
-    // Handle BLE control commands
-    if (topicStr == Config::MQTT_TOPIC_BLE_CONTROL) {
-        const char* command = doc["command"];
-        const char* address = doc["address"];
-
-        if (!command) {
-            Serial.println("No command in control message");
-            return;
-        }
-
-        if (strcmp(command, "connect") == 0 && address) {
-            Serial.printf("Connecting to device: %s\n", address);
-            ble.connectToDevice(address);
-        } else if (strcmp(command, "disconnect") == 0 && address) {
-            Serial.printf("Disconnecting from device: %s\n", address);
-            ble.disconnectDevice(address);
-        } else if (strcmp(command, "scan_start") == 0) {
-            Serial.println("Starting BLE scan");
-            ble.startScan();
-        } else if (strcmp(command, "scan_stop") == 0) {
-            Serial.println("Stopping BLE scan");
-            ble.stopScan();
-        } else if (strcmp(command, "list") == 0) {
-            std::vector<String> connected = ble.getConnectedDevices();
-            Serial.printf("Connected devices: %d\n", connected.size());
-            for (const auto& addr : connected) {
-                Serial.printf("  - %s\n", addr.c_str());
-            }
-        } else {
-            Serial.printf("Unknown command: %s\n", command);
-        }
+    if (!kind || strcmp(kind, "COMMAND") != 0) {
+        Serial.println("Not a COMMAND message, ignoring");
+        return;
     }
-    // Handle config commands
-    else if (topicStr == Config::MQTT_TOPIC_CONFIG) {
-        const char* action = doc["action"];
 
-        if (action && strcmp(action, "status") == 0) {
-            printStatus();
-            mqtt.publishStatus("online");
-        } else if (action && strcmp(action, "restart") == 0) {
-            Serial.println("Restarting...");
-            delay(1000);
-            ESP.restart();
-        }
+    if (!type || !requestId) {
+        Serial.println("Missing type or requestId");
+        return;
     }
+
+    Serial.printf("Command: type=%s, requestId=%s\n", type, requestId);
+
+    JsonObject cmdPayload = doc["payload"].as<JsonObject>();
+
+    if (strcmp(type, "BLE_SCAN") == 0) {
+        handleBLEScan(requestId);
+    } else if (strcmp(type, "BLE_CONNECT") == 0) {
+        handleBLEConnect(requestId, cmdPayload);
+    } else if (strcmp(type, "BLE_DISCONNECT") == 0) {
+        handleBLEDisconnect(requestId, cmdPayload);
+    } else if (strcmp(type, "STATUS") == 0) {
+        handleStatusRequest(requestId);
+    } else if (strcmp(type, "RESTART") == 0) {
+        JsonDocument resDoc;
+        JsonObject resPayload = resDoc.to<JsonObject>();
+        resPayload["message"] = "restarting";
+        mqtt.publishResult(type, requestId, resPayload);
+        delay(500);
+        ESP.restart();
+    } else {
+        Serial.printf("Unknown command type: %s\n", type);
+        JsonDocument resDoc;
+        JsonObject resPayload = resDoc.to<JsonObject>();
+        resPayload["error"] = "UNKNOWN_COMMAND";
+        mqtt.publishResult(type, requestId, resPayload);
+    }
+}
+
+void LocalHub::handleBLEScan(const char* requestId) {
+    Serial.println("Starting BLE scan...");
+    ble.startScan();
+
+    JsonDocument doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["message"] = "scan_started";
+
+    mqtt.publishResult("BLE_SCAN", requestId, payload);
+}
+
+void LocalHub::handleBLEConnect(const char* requestId, JsonObject& cmdPayload) {
+    const char* address = cmdPayload["address"];
+    if (!address) {
+        JsonDocument doc;
+        JsonObject payload = doc.to<JsonObject>();
+        payload["error"] = "address required";
+        mqtt.publishResult("BLE_CONNECT", requestId, payload);
+        return;
+    }
+
+    bool ok = ble.connectToDevice(address);
+
+    JsonDocument doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["address"] = address;
+    payload["success"] = ok;
+
+    mqtt.publishResult("BLE_CONNECT", requestId, payload);
+}
+
+void LocalHub::handleBLEDisconnect(const char* requestId, JsonObject& cmdPayload) {
+    const char* address = cmdPayload["address"];
+    if (!address) {
+        JsonDocument doc;
+        JsonObject payload = doc.to<JsonObject>();
+        payload["error"] = "address required";
+        mqtt.publishResult("BLE_DISCONNECT", requestId, payload);
+        return;
+    }
+
+    bool ok = ble.disconnectDevice(address);
+
+    JsonDocument doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["address"] = address;
+    payload["success"] = ok;
+
+    mqtt.publishResult("BLE_DISCONNECT", requestId, payload);
+}
+
+void LocalHub::handleStatusRequest(const char* requestId) {
+    JsonDocument doc;
+    JsonObject payload = doc.to<JsonObject>();
+    payload["wifi"] = wifi.isConnected();
+    payload["ip"] = wifi.getLocalIP();
+    payload["rssi"] = wifi.getRSSI();
+    payload["mqtt"] = mqtt.isConnected();
+    payload["uptime"] = millis() / 1000;
+    payload["version"] = Config::HUB_VERSION;
+
+    std::vector<String> devices = ble.getConnectedDevices();
+    JsonArray bleArr = payload["bleDevices"].to<JsonArray>();
+    for (const auto& addr : devices) {
+        bleArr.add(addr);
+    }
+
+    mqtt.publishResult("STATUS", requestId, payload);
 }

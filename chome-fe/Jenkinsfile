@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = 'localhost:30500'
+        IMAGE_NAME = 'chome-fe'
+        DEPLOY_REPO = 'git@github.com:CSeungJoo/cseungjoo-deploy.git'
+        DEPLOY_BRANCH = 'main'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                dir('chome-fe') {
+                    script {
+                        def gitCommit = env.GIT_COMMIT ?: sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                        def imageTag = "${env.BUILD_NUMBER}-${gitCommit.take(7)}"
+                        env.IMAGE_TAG = imageTag
+
+                        sh """
+                            docker build -t ${REGISTRY}/${IMAGE_NAME}:${imageTag} .
+                            docker build -t ${REGISTRY}/${IMAGE_NAME}:latest .
+                            docker push ${REGISTRY}/${IMAGE_NAME}:${imageTag}
+                            docker push ${REGISTRY}/${IMAGE_NAME}:latest
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Update Deploy Manifest') {
+            steps {
+                script {
+                    sshagent(credentials: ['github-ssh']) {
+                        sh """
+                            rm -rf deploy-repo
+                            git clone ${DEPLOY_REPO} deploy-repo
+                            cd deploy-repo
+
+                            MANIFEST_FILE="manifests/projects/chome-fe/deployment.yaml"
+                            if [ ! -f "\$MANIFEST_FILE" ]; then
+                                echo "ERROR: Manifest file not found"
+                                exit 1
+                            fi
+                            sed -i 's|image: ${REGISTRY}/${IMAGE_NAME}:.*|image: ${REGISTRY}/${IMAGE_NAME}:${env.IMAGE_TAG}|' \$MANIFEST_FILE
+                            grep -q "image: ${REGISTRY}/${IMAGE_NAME}:${env.IMAGE_TAG}" \$MANIFEST_FILE || { echo "ERROR: Image update failed"; exit 1; }
+
+                            git config user.email "jenkins@cseungjoo.kr"
+                            git config user.name "Jenkins CI"
+                            git add manifests/projects/chome-fe/deployment.yaml
+                            git diff --cached --quiet || git commit -m "chome-fe: update image to ${env.IMAGE_TAG}"
+                            git push origin ${DEPLOY_BRANCH}
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build ${env.IMAGE_TAG} deployed successfully"
+        }
+        failure {
+            echo "Build failed"
+        }
+        always {
+            sh 'rm -rf deploy-repo'
+            cleanWs()
+        }
+    }
+}
