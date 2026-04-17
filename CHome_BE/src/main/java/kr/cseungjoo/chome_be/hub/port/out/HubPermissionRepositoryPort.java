@@ -7,4 +7,5 @@ import java.util.List;
 public interface HubPermissionRepositoryPort {
     List<HubPermission> findByUserIdAndHubIdIn(long userId, List<Long> hubIds);
     List<HubPermission> findByUserIdAndHubId(long userId, long hubId);
+    List<HubPermission> save(List<HubPermission> hubPermissions);
 }

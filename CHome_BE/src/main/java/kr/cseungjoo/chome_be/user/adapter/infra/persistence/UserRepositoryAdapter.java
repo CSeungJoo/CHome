@@ -1,7 +1,7 @@
 package kr.cseungjoo.chome_be.user.adapter.infra.persistence;
 
 import kr.cseungjoo.chome_be.user.domain.User;
-import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
+import kr.cseungjoo.chome_be.user.port.out.UserRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

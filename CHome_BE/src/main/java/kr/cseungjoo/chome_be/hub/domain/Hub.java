@@ -74,4 +74,10 @@ public class Hub {
     public boolean isOwner(long userId) {
         return userId == ownerId;
     }
+
+    public void assertInvitableBy(long userId) {
+        if (userId != ownerId) {
+            throw new HubPermissionDeniedException("초대 권한이 없습니다.");
+        }
+    }
 }

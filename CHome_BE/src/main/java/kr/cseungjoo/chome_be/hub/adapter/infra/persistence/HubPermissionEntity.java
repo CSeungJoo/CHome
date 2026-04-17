@@ -19,7 +19,7 @@ public class HubPermissionEntity {
     private Long id;
 
     @Column
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private HubAction action;
 
     @ManyToOne(fetch = FetchType.LAZY)

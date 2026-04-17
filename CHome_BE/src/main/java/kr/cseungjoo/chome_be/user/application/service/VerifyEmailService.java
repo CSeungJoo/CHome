@@ -2,7 +2,7 @@ package kr.cseungjoo.chome_be.user.application.service;
 
 import kr.cseungjoo.chome_be.user.application.port.in.VerifyEmailUseCase;
 import kr.cseungjoo.chome_be.user.application.port.out.EmailVerificationTokenPort;
-import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
+import kr.cseungjoo.chome_be.user.port.out.UserRepositoryPort;
 import kr.cseungjoo.chome_be.user.domain.User;
 import kr.cseungjoo.chome_be.user.application.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;

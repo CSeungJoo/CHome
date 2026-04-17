@@ -1,5 +1,6 @@
 package kr.cseungjoo.chome_be.hub.application.service;
 
+import io.micrometer.core.annotation.Timed;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsCommand;
 import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsUseCase;
 import kr.cseungjoo.chome_be.hub.port.out.HubPermissionRepositoryPort;
@@ -23,6 +24,8 @@ public class FindAccessibleHubsService implements FindAccessibleHubsUseCase {
 
     private final HubRepositoryPort hubRepositoryPort;
     private final HubPermissionRepositoryPort hubPermissionRepositoryPort;
+
+    @Timed(value = "hub.find.accessible", description = "Time taken to find accessible hubs")
     @Override
     public FindAccessibleHubsResult execute(FindAccessibleHubsCommand command) {
         Page<Hub> hubs = hubRepositoryPort.findByUserId(command.userId(), command.pageable());

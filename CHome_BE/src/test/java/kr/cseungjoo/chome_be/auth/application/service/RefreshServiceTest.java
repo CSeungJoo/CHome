@@ -6,7 +6,7 @@ import kr.cseungjoo.chome_be.auth.port.in.RefreshResult;
 import kr.cseungjoo.chome_be.shared.port.out.RefreshTokenPort;
 import kr.cseungjoo.chome_be.shared.port.out.TokenProviderPort;
 import kr.cseungjoo.chome_be.user.application.exception.UserNotFoundException;
-import kr.cseungjoo.chome_be.user.application.port.out.UserRepositoryPort;
+import kr.cseungjoo.chome_be.user.port.out.UserRepositoryPort;
 import kr.cseungjoo.chome_be.user.domain.Role;
 import kr.cseungjoo.chome_be.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
