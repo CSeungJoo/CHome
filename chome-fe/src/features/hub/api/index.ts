@@ -9,11 +9,21 @@ import type {
   ChangeHubAliasResponse,
   SendHubCommandRequest,
   SendHubCommandResponse,
+  InviteHubRequest,
+  InviteHubResponse,
 } from "../types";
 
 export async function registerHub(req: RegisterHubRequest) {
   const { data } = await apiClient.post<BaseResponse<RegisterHubResponse>>(
     "/hubs",
+    req
+  );
+  return data.data;
+}
+
+export async function inviteHub(hubId: number, req: InviteHubRequest) {
+  const { data } = await apiClient.post<BaseResponse<InviteHubResponse>>(
+    `/hubs/${hubId}/invite`,
     req
   );
   return data.data;

@@ -7,11 +7,13 @@ import {
   deleteHub,
   changeHubAlias,
   sendHubCommand,
+  inviteHub,
 } from "../api";
 import type {
   RegisterHubRequest,
   ChangeHubAliasRequest,
   SendHubCommandRequest,
+  InviteHubRequest,
 } from "../types";
 
 export function useHubs(page = 0, size = 10) {
@@ -51,3 +53,11 @@ export function useSendHubCommand(hubId: number) {
     mutationFn: (req: SendHubCommandRequest) => sendHubCommand(hubId, req),
   });
 }
+
+export function useInviteHub() {
+  return useMutation({
+    mutationFn: ({ hubId, req }: { hubId: number; req: InviteHubRequest }) =>
+      inviteHub(hubId, req),
+  });
+}
+
