@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Button, Card } from "@/shared/ui";
 import { useHubs, useDeleteHub } from "@/features/hub/hooks";
-import { RegisterHubModal } from "@/features/hub/ui/register-hub-modal";
-import { EditHubAliasModal } from "@/features/hub/ui/edit-hub-alias-modal";
+import { RegisterHubModal, EditHubAliasModal, InviteHubModal } from "@/features/hub/ui";
 import Link from "next/link";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi2";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineUserPlus } from "react-icons/hi2";
+
 import type { AccessibleHub } from "@/features/hub/types";
 
 export default function HubsPage() {
@@ -16,6 +16,7 @@ export default function HubsPage() {
 
   const [showRegister, setShowRegister] = useState(false);
   const [editHub, setEditHub] = useState<AccessibleHub | null>(null);
+  const [inviteHub, setInviteHub] = useState<AccessibleHub | null>(null);
 
   const handleDelete = (hubId: number) => {
     if (confirm("정말 이 허브를 삭제하시겠습니까?")) {
@@ -65,7 +66,7 @@ export default function HubsPage() {
                 <p className="text-sm text-gray-500 mb-4">
                   S/N: {hub.serialNumber}
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -75,15 +76,26 @@ export default function HubsPage() {
                     별명 변경
                   </Button>
                   {hub.isOwner && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(hub.id)}
-                      className="text-red-400 hover:bg-red-900/30"
-                    >
-                      <HiOutlineTrash className="w-4 h-4 mr-1" />
-                      삭제
-                    </Button>
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setInviteHub(hub)}
+                        className="text-blue-400 hover:bg-blue-900/30"
+                      >
+                        <HiOutlineUserPlus className="w-4 h-4 mr-1" />
+                        초대
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(hub.id)}
+                        className="text-red-400 hover:bg-red-900/30"
+                      >
+                        <HiOutlineTrash className="w-4 h-4 mr-1" />
+                        삭제
+                      </Button>
+                    </>
                   )}
                 </div>
               </Card>
@@ -127,6 +139,15 @@ export default function HubsPage() {
           onClose={() => setEditHub(null)}
           hubId={editHub.id}
           currentAlias={editHub.alias}
+        />
+      )}
+
+      {inviteHub && (
+        <InviteHubModal
+          isOpen={!!inviteHub}
+          onClose={() => setInviteHub(null)}
+          hubId={inviteHub.id}
+          hubAlias={inviteHub.alias}
         />
       )}
     </div>

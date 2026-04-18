@@ -1,3 +1,21 @@
+export enum HubAction {
+  CREATE = "CREATE",
+  READ = "READ",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+}
+
+export interface InviteHubRequest {
+  targetEmail: string;
+  permissions: HubAction[];
+}
+
+export interface InviteHubResponse {
+  hubAlias: string;
+  targetEmail: string;
+  permissions: HubAction[];
+}
+
 export interface RegisterHubRequest {
   serialNumber: string;
   alias: string;

@@ -35,6 +35,19 @@ public class HubPermissionRepositoryAdapter implements HubPermissionRepositoryPo
         return hubPermissions;
     }
 
+    @Override
+    public List<HubPermission> save(List<HubPermission> hubPermissions) {
+        List<HubPermissionEntity> entities = hubPermissions.stream()
+                .map(this::toEntity)
+                .toList();
+
+        hubPermissions = jpaHubPermissionRepository.saveAll(entities).stream()
+                .map(this::toDomain)
+                .toList();
+
+        return hubPermissions;
+    }
+
     private HubPermissionEntity toEntity(HubPermission hubPermission) {
         HubPermissionEntity hubPermissionEntity = new HubPermissionEntity(
                 hubPermission.getId(),

@@ -3,28 +3,11 @@ package kr.cseungjoo.chome_be.hub.adapter.web.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.ChangeHubAliasRequest;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.InviteHubRequest;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.RegisterHubRequest;
 import kr.cseungjoo.chome_be.hub.adapter.web.dto.request.SendHubCommandRequest;
-import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.ChangeHubAliasResponse;
-import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.DeleteHubResponse;
-import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.GetAccessibleHubsResponse;
-import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.RegisterHubResponse;
-import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.SendHubCommandResponse;
-import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasCommand;
-import kr.cseungjoo.chome_be.hub.port.in.DeleteHubCommand;
-import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsCommand;
-import kr.cseungjoo.chome_be.hub.port.in.RegisterHubCommand;
-import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandCommand;
-import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasResult;
-import kr.cseungjoo.chome_be.hub.port.in.DeleteHubResult;
-import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsResult;
-import kr.cseungjoo.chome_be.hub.port.in.RegisterHubResult;
-import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandResult;
-import kr.cseungjoo.chome_be.hub.port.in.ChangeHubAliasUseCase;
-import kr.cseungjoo.chome_be.hub.port.in.DeleteHubUseCase;
-import kr.cseungjoo.chome_be.hub.port.in.FindAccessibleHubsUseCase;
-import kr.cseungjoo.chome_be.hub.port.in.RegisterHubUseCase;
-import kr.cseungjoo.chome_be.hub.port.in.SendHubCommandUseCase;
+import kr.cseungjoo.chome_be.hub.adapter.web.dto.response.*;
+import kr.cseungjoo.chome_be.hub.port.in.*;
 import kr.cseungjoo.chome_be.shared.adapter.web.annotation.ApiV1;
 import kr.cseungjoo.chome_be.shared.adapter.web.context.AuthenticatedUser;
 import kr.cseungjoo.chome_be.shared.adapter.web.response.BasicResponse;
@@ -41,11 +24,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class HubController {
 
-    private final RegisterHubUseCase registerHubUseCase;
-    private final FindAccessibleHubsUseCase findAccessibleHubsUseCase;
+    private final InviteHubUseCase inviteHubUseCase;
     private final DeleteHubUseCase deleteHubUseCase;
+    private final RegisterHubUseCase registerHubUseCase;
     private final ChangeHubAliasUseCase changeHubAliasUseCase;
     private final SendHubCommandUseCase sendHubCommandUseCase;
+    private final FindAccessibleHubsUseCase findAccessibleHubsUseCase;
 
     @PostMapping
     public ResponseEntity<BasicResponse.BaseResponse> registerHub(
@@ -162,6 +146,30 @@ public class HubController {
         SendHubCommandResponse response = new SendHubCommandResponse(
                 result.requestId(),
                 result.type()
+        );
+
+        return BasicResponse.ok(response);
+    }
+
+    @PostMapping("/{hubId}/invite")
+    public ResponseEntity<BasicResponse.BaseResponse> inviteHub(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable Long hubId,
+            @Valid @RequestBody InviteHubRequest request
+    ) {
+        InviteHubResult result = inviteHubUseCase.execute(
+                new InviteHubCommand(
+                        authenticatedUser.userId(),
+                        hubId,
+                        request.targetEmail(),
+                        request.permissions()
+                )
+        );
+
+        InviteHubResponse response = new InviteHubResponse(
+                result.hubAlias(),
+                result.targetEmail(),
+                result.permissions()
         );
 
         return BasicResponse.ok(response);

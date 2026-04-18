@@ -9,7 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "hub_permissions")
+@Table(
+        name = "hub_permissions",
+        indexes = {
+                @Index(name = "idx_user_hub", columnList = "user_id, hub_id")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -19,7 +24,7 @@ public class HubPermissionEntity {
     private Long id;
 
     @Column
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private HubAction action;
 
     @ManyToOne(fetch = FetchType.LAZY)

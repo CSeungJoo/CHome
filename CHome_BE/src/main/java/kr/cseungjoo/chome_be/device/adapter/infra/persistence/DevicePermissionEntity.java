@@ -20,7 +20,7 @@ public class DevicePermissionEntity {
     private Long id;
 
     @Column
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private DeviceAction action;
 
     @ManyToOne(fetch = FetchType.LAZY)
