@@ -60,7 +60,7 @@ ESP32 기반의 IoT 허브, Spring Boot 백엔드, React 프론트엔드까지 E
     - (3) 이미 처리된 `commandId`로 들어온 요청은 소비 단계에서 무시
     - (4) 처리 결과는 별도 토픽으로 발행하여 SSE를 통해 클라이언트에게 즉시 전달
 - **결과**: 동일 커맨드가 중복으로 전달되어도 디바이스 측면에서는 정확히 한 번만 실행됨을 보장. 네트워크 불안정 환경에서도 안정적인 제어 흐름 확보.
-
+[Wiki: Hub 조회 성능 개선](https://github.com/CSeungJoo/CHome/wiki/%5B%EC%84%B1%EB%8A%A5%EA%B0%9C%EC%84%A0%5D-Hub-%EB%AA%A9%EB%A1%9D-%EC%A1%B0%ED%9A%8C-API-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%E2%80%94-%EB%B3%B5%ED%95%A9-%EC%9D%B8%EB%8D%B1%EC%8A%A4-%EC%84%A4%EA%B3%84)
 <br>
 
 ### 3. 헥사고날 아키텍처 기반 도메인 모듈 분리
