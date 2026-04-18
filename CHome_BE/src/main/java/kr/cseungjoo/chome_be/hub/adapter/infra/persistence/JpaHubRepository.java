@@ -16,8 +16,8 @@ public interface JpaHubRepository extends JpaRepository<HubEntity, Long> {
            or exists (
                select 1
                from HubPermissionEntity hp
-               where hp.hub = h
-                 and hp.user.id = :userId
+               where hp.user.id = :userId
+                 and hp.hub = h
            )
     """)
     Page<HubEntity> findByUserId(
